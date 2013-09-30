@@ -1,4 +1,5 @@
 $(document).ready(function() {
+	
 	$(".X").html("X")
 	$(".O").html("O")
 	$(".Clear").html("A")
