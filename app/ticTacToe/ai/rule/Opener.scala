@@ -51,6 +51,15 @@ class Opener(icon: CellState) extends AiRule {
       }
     }
     
+    if(opponentsMove._1 == 1 || opponentsMove._2 == 1) {
+      opponentsMove match {
+        case (0, 1) => return if (board.cellState(0, 0) == Clear) Some((0,0)) else Some((0,2))
+        case (2, 1) => return if (board.cellState(2, 0) == Clear) Some((2,0)) else Some((2,2))
+        case (1, 0) => return if (board.cellState(0, 0) == Clear) Some((0,0)) else Some((2,0))
+        case (1, 2) => return if (board.cellState(2, 2) == Clear) Some((2,2)) else Some((0,2))
+      }
+    }
+    
     None
   }
 }
