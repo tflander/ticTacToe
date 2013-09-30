@@ -8,7 +8,15 @@ h1 {
 	padding: 1em;
 }
 
+p {
+	font-size: 150%;	
+}
+
 table.ticTacToe {
+}
+
+input.newGame {
+	font-size: 200%;
 }
 
 table.ticTacToe tr td {
