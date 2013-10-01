@@ -29,7 +29,7 @@ class GameTest extends FunSpec with ShouldMatchers {
       }
     }
     
-    for (i <- 1 to 1000) play
+    for (i <- 1 to 100000) play
     
   }
 }

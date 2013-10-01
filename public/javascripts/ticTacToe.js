@@ -5,9 +5,11 @@ $(document).ready(function() {
 	$(".Clear").html("A")
 	
 	$(".Clear").click(function() {
-		$(this).removeClass().addClass("O").html("O");
-		var cells = $(".ticTacToe").text().replace(/ /g, "");
-		document.location.href = "/" + cells;
+		if($("#message").text().length == 0) {
+			$(this).removeClass().addClass("O").html("O");
+			var cells = $(".ticTacToe").text().replace(/ /g, "");
+			document.location.href = "/" + cells;
+		}
 	});
 	
 	$(".newGame").click(function() {

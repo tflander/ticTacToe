@@ -21,9 +21,10 @@ class SmarterAi(icon: CellState) extends ComputerPlayer {
     }
     
     blocker.squareToPlay(board) match {
-      case None => return randomAi.takeSquare(board)
+      case None => 
       case Some(square: (Int, Int)) => return board.setCellState(square._1, square._2, icon)
     }
-    board
+    
+    return randomAi.takeSquare(board)
   }
 }
