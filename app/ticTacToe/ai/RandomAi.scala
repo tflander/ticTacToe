@@ -10,7 +10,7 @@ class RandomAi(icon: CellState) extends ComputerPlayer {
   val random = new Random(new Date().getTime)
   
   override def takeSquare(board: Board): Board = {
-    require(!board.gameOver)
+    require((!board.gameOver || board.winner != Clear) && !board.emptySquares.isEmpty)
     
     def randomEmptySquare(board: Board): (Int, Int) = {
       

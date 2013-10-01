@@ -16,6 +16,10 @@ class Board(cells: Array[Array[CellState]]) {
     return cells(col)(row)
   }
 
+  def setCellState(square: (Int, Int), cellState: CellState): Board = {
+    setCellState(square._1, square._2, cellState)
+  }
+  
   def setCellState(col: Int, row: Int, cellState: CellState): Board = {
     require(col < boardSize && row < boardSize)
     val newState = for (c <- 0 to boardSizeMinusOne) yield for (r <- 0 to boardSizeMinusOne) yield if (c == col && r == row) cellState else cells(c)(r)
@@ -71,9 +75,10 @@ class Board(cells: Array[Array[CellState]]) {
       for(r <- 0 to boardSizeMinusOne)
         yield if(cells(c)(r) == icon) Some(c, r) else None 
         
-     
     return playedCells.flatten.flatten
   }
+  
+  def emptySquares = occupiedSquares(Clear)
 
 }
 

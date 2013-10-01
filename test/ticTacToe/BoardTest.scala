@@ -13,11 +13,17 @@ class BoardTest extends FunSpec with ShouldMatchers {
           board.cellState(col, row) should be(Clear)
     }
 
-    it("should allow you to copy a board with a cell change") {
+    it("should allow you to copy a board with a cell change via two Ints") {
       val clearBoard = Board()
       val updatedBoard = clearBoard.setCellState(1, 2, X)
       updatedBoard.cellState(1, 2) should be(X)
     }
+    
+    it("should allow you to copy a board with a cell change via a tuple of Ints") {
+      val clearBoard = Board()
+      val updatedBoard = clearBoard.setCellState((1, 2), X)
+      updatedBoard.cellState(1, 2) should be(X)
+    }    
 
     it("has no winner for a new board") {
       val board = Board()
@@ -193,4 +199,23 @@ class BoardTest extends FunSpec with ShouldMatchers {
       board.occupiedSquares(X) should be (Seq((1, 1), (2, 2)))
     }
   }
+  
+  describe("empty squares") {
+    it("should find them") {
+      val board = Board()
+      .setCellState(1, 1, X)
+      .setCellState(2, 2, X)
+      
+      board.emptySquares should be (Seq(
+          (0, 0), 
+          (0, 1), 
+          (0, 2), 
+          (1, 0), 
+          (1, 2), 
+          (2, 0), 
+          (2, 1) 
+      ))
+    }
+  }
+  
 }

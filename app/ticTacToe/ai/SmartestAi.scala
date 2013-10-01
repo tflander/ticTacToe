@@ -5,10 +5,11 @@ import ticTacToe.Board
 import ticTacToe.ai.rule.Blocker
 import ticTacToe.ai.rule.Winner
 import ticTacToe.ai.rule.Opener
+import ticTacToe.ai.rule.Priority
 
 class SmartestAi(icon: CellState) extends ComputerPlayer {
 
-  val randomAi = new RandomAi(icon)
+  val priority = new Priority(icon)
   val opener = new Opener(icon)
   val winner = new Winner(icon)
   val blocker = new Blocker(icon)
@@ -19,18 +20,19 @@ class SmartestAi(icon: CellState) extends ComputerPlayer {
 
     opener.squareToPlay(board) match {
       case None => 
-      case Some(square: (Int, Int)) => return board.setCellState(square._1, square._2, icon)      
+      case Some(square: (Int, Int)) => return board.setCellState(square, icon)      
     }
     
     winner.squareToPlay(board) match {
       case None => 
-      case Some(square: (Int, Int)) => return board.setCellState(square._1, square._2, icon)      
+      case Some(square: (Int, Int)) => return board.setCellState(square, icon)      
     }
     
     blocker.squareToPlay(board) match {
-      case None => return randomAi.takeSquare(board)
-      case Some(square: (Int, Int)) => return board.setCellState(square._1, square._2, icon)
+      case None => 
+      case Some(square: (Int, Int)) => return board.setCellState(square, icon)
     }
-    board
+    
+    return board.setCellState(priority.squareToPlay(board).get, icon)
   }
 }
