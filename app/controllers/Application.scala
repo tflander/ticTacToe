@@ -37,6 +37,8 @@ object Application extends Controller {
         case O => "You Win??  You must have cheated!!!"
       }
     }
+    Logger.info(setup)
+    if(!message.isEmpty) Logger.info(message)
     Ok(views.html.index(message, updatedBoard))
   }
   
