@@ -8,6 +8,7 @@ import ticTacToe.ai.SmarterAi
 class GameTest extends FunSpec with ShouldMatchers {
 
   var game: Game = _
+  val runsPerTest = 10000
 
   it("never loses as X") {
     def play = {
@@ -22,7 +23,7 @@ class GameTest extends FunSpec with ShouldMatchers {
         winner should be(X)
       }
     }
-    for (i <- 1 to 100000) play
+    for (i <- 1 to runsPerTest) play
   }
 
   it("never loses as O") {
@@ -38,7 +39,18 @@ class GameTest extends FunSpec with ShouldMatchers {
         winner should be(O)
       }
     }
-    for (i <- 1 to 100000) play
+    for (i <- 1 to runsPerTest) play
+  }
+
+  it("always ties using the best AI (war games)") {
+    def play = {
+      game = new Game
+      val board = game.play(new SmartestAi(X), new SmartestAi(O))
+
+      val winner = board.winner
+      winner should be(Clear)
+    }
+    for (i <- 1 to runsPerTest) play
   }
   
 }
