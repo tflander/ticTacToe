@@ -7,18 +7,32 @@ import ticTacToe.ai.SmartestAi
 class Game {
 
   var board: Board = _
-  val player1 = new SmartestAi(X)
-//  val player2 = new SmartestAi(O)
-  val player2 = new SmarterAi(O)
-  
+  val player1 = new SmarterAi(X)
+  val player2 = new SmartestAi(O)
+  //  val player2 = new SmarterAi(O)
+
   def play(): Board = {
     board = Board()
     while (true) {
       board = player1.takeSquare(board)
-      if(board.gameOver) return board
+      printBoard()
+      if (board.gameOver) return board
       board = player2.takeSquare(board)
-      if(board.gameOver) return board
+      printBoard()
+      if (board.gameOver) return board
     }
     return null
+  }
+
+  def printBoard() = {
+    for (row <- 0 to 2) {
+      for (col <- 0 to 2) {
+        val mark = board.cellState(col, row)
+        val icon = if (mark == Clear) "." else mark.toString
+        print(icon)
+      }
+      println("")
+    }
+      println("")
   }
 }

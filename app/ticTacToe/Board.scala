@@ -79,6 +79,12 @@ class Board(cells: Array[Array[CellState]]) {
   }
   
   def emptySquares = occupiedSquares(Clear)
+  
+  def nextPlayer: CellState = {
+    val xPlays = occupiedSquares(X).size
+    val oPlays = occupiedSquares(O).size
+    if(xPlays > oPlays) O else X
+  }
 
 }
 

@@ -1,7 +1,8 @@
 @(message: String, board: ticTacToe.Board)
 
-@main("Unbeatable Tic Tac Toe") {
-    <h1>Unbeatable Tic Tac Toe</h1>
+@main("Tic Tac Toe") {
+    <h1>Tic Tac Toe</h1>
+    <h2>Computer first is Unbeatable, human first -- not so much</h2>
     
     <table class="ticTacToe">
 	    <tr class="row0">
@@ -20,6 +21,7 @@
 	    	<td class="col2 @board.cellState(2, 2)"></td>
 	    </tr>
     </table>
-    <input type="button" class="newGame" value="New Game"/>
+    <input type="button" class="newGame youFirst" value="New Game (You First)"/>
+    <input type="button" class="newGame meFirst" value="New Game (Me First)"/>
    	<p id="message">@message</p>
 }

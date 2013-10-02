@@ -218,4 +218,17 @@ class BoardTest extends FunSpec with ShouldMatchers {
     }
   }
   
+  describe("when nextPlayer") {
+    it("knows X goes first") {
+      val board = Board()
+      board.nextPlayer should be(X)
+    }
+    
+    it("knows O goes second") {
+      val board = Board().setCellState((1, 1), X)
+      board.nextPlayer should be(O)
+    }
+    
+  }
+  
 }

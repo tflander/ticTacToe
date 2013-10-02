@@ -9,10 +9,10 @@ import controllers.support.BoardState
 
 object Application extends Controller {
   
-  val ai = new SmartestAi(X)
   
   def index = Action {
     val board = Board()
+    val ai = new SmartestAi(board.nextPlayer)
     Ok(views.html.index("", ai.takeSquare(board)))
   }
 
@@ -28,6 +28,7 @@ object Application extends Controller {
     	.setCellState(0, 2, cellStates(6))
     	.setCellState(1, 2, cellStates(7))
     	.setCellState(2, 2, cellStates(8))
+    val ai = new SmartestAi(board.nextPlayer)
     val updatedBoard = if(board.gameOver) board else ai.takeSquare(board)
     val message = updatedBoard.gameOver match {
       case false => ""
