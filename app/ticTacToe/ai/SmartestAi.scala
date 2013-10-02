@@ -6,10 +6,12 @@ import ticTacToe.ai.rule.Blocker
 import ticTacToe.ai.rule.Winner
 import ticTacToe.ai.rule.Opener
 import ticTacToe.ai.rule.Priority
+import ticTacToe.ai.rule.CornerNearOpponent
 
 class SmartestAi(icon: CellState) extends ComputerPlayer {
 
   val priority = new Priority(icon)
+  val cornerNearOpponent = new CornerNearOpponent(icon)
   val opener = new Opener(icon)
   val winner = new Winner(icon)
   val blocker = new Blocker(icon)
@@ -29,6 +31,11 @@ class SmartestAi(icon: CellState) extends ComputerPlayer {
     }
     
     blocker.squareToPlay(board) match {
+      case None => 
+      case Some(square: (Int, Int)) => return board.setCellState(square, icon)
+    }
+    
+    cornerNearOpponent.squareToPlay(board) match {
       case None => 
       case Some(square: (Int, Int)) => return board.setCellState(square, icon)
     }

@@ -96,5 +96,11 @@ object Board {
       Array(Clear, Clear, Clear),
       Array(Clear, Clear, Clear)))
   }
-
+  
+  val corners = Seq(
+    (0, 0),
+    (0, 2),
+    (2, 0),
+    (2, 2))
+  
 }

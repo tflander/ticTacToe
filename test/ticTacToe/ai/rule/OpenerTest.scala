@@ -70,6 +70,17 @@ class OpenerTest extends FunSpec with ShouldMatchers {
         .setCellState(0, 1, O)
       val ai = new Opener(X)
       ai.squareToPlay(board) should be(Some(0, 2))
+    }    
+  }
+  
+  describe("moves 4th") {
+    it("takes edge if have center and opponent has opposite corners") {
+      val board = Board()
+        .setCellState(0, 0, X)
+        .setCellState(1, 1, O)
+        .setCellState(2, 2, X)
+      val ai = new Opener(O)
+      ai.squareToPlay(board) should be(Some(0, 1))  // any edge is fine
     }
   }
 }

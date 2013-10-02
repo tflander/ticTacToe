@@ -6,11 +6,6 @@ import ticTacToe.Board
 class CornerNearOpponent(icon: CellState) extends AiRule {
 
   val opponent = if (icon == X) O else X
-  val corners = Seq(
-    (0, 0),
-    (0, 2),
-    (2, 0),
-    (2, 2))
 
   override def squareToPlay(board: Board): Option[(Int, Int)] = {
     def isEdge()(square: (Int, Int)): Boolean = {
@@ -18,10 +13,9 @@ class CornerNearOpponent(icon: CellState) extends AiRule {
     }
 
     def isCorner()(square: (Int, Int)): Boolean = {
-      return corners.contains(square)
+      return Board.corners.contains(square)
     }
 
-    println(board.occupiedSquares(opponent))
     val opponentsEdgeMoves = board.occupiedSquares(opponent).filter(isEdge())
     val availableCorners = board.emptySquares.filter(isCorner())
     for (corner <- availableCorners) {

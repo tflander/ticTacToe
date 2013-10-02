@@ -2,24 +2,18 @@ package ticTacToe
 
 import org.scalatest._
 import CellState._
+import ticTacToe.ai.SmartestAi
+import ticTacToe.ai.SmarterAi
 
 class GameTest extends FunSpec with ShouldMatchers {
 
   var game: Game = _
 
-  ignore("never loses as X") {
+  it("never loses as X") {
     def play = {
       game = new Game
-      val board = game.play()
+      val board = game.play(new SmartestAi(X), new SmarterAi(O))
 
-      for (row <- 0 to 2) {
-        for (col <- 0 to 2) {
-          val mark = board.cellState(col, row)
-          val icon = if (mark == Clear) "." else mark.toString
-          print(icon)
-        }
-        println("")
-      }
       val winner = board.winner
       if (winner == Clear) {
         println("\nCat\n")
@@ -34,7 +28,7 @@ class GameTest extends FunSpec with ShouldMatchers {
   it("never loses as O") {
     def play = {
       game = new Game
-      val board = game.play()
+      val board = game.play(new SmarterAi(X), new SmartestAi(O))
 
       val winner = board.winner
       if (winner == Clear) {

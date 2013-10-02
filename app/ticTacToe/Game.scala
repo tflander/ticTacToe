@@ -3,21 +3,19 @@ import CellState._
 import ticTacToe.ai.RandomAi
 import ticTacToe.ai.SmarterAi
 import ticTacToe.ai.SmartestAi
+import ticTacToe.ai.ComputerPlayer
 
 class Game {
 
   var board: Board = _
-  val player1 = new SmarterAi(X)
-  val player2 = new SmartestAi(O)
-  //  val player2 = new SmarterAi(O)
 
-  def play(): Board = {
+  def play(x: ComputerPlayer, o: ComputerPlayer): Board = {
     board = Board()
     while (true) {
-      board = player1.takeSquare(board)
+      board = x.takeSquare(board)
       printBoard()
       if (board.gameOver) return board
-      board = player2.takeSquare(board)
+      board = o.takeSquare(board)
       printBoard()
       if (board.gameOver) return board
     }
