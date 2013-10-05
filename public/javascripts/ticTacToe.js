@@ -2,11 +2,16 @@
 function allowClickOnEmptyCells() {
 	$(".Clear").click(function() {
 		if ($("#message").text().length == 0) {
+			disableClicks();
 			$(this).removeClass().addClass("O").html("O");
 			var cells = $(".ticTacToe").text().replace(/ /g, "");
 			document.location.href = "/" + cells;
 		}
 	});
+}
+
+function disableClicks() {
+	$(".Clear").unbind("click");	
 }
 
 $(document).ready(function() {
