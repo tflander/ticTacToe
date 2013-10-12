@@ -22,39 +22,61 @@ class Board(cells: Array[Array[CellState]]) {
   
   def setCellState(col: Int, row: Int, cellState: CellState): Board = {
     require(col < boardSize && row < boardSize)
-    val newState = for (c <- 0 to boardSizeMinusOne) yield for (r <- 0 to boardSizeMinusOne) yield if (c == col && r == row) cellState else cells(c)(r)
+    
+    val newState = 
+      for (c <- 0 to boardSizeMinusOne) 
+        yield for (r <- 0 to boardSizeMinusOne) 
+          yield if (c == col && r == row) cellState else cells(c)(r)
 
     val updatedCells = newState.map(_.toArray).toArray
 
     return new Board(updatedCells)
   }
+  
+  def row(rowNum: Int): Seq[CellState] = {
+        for (c <- 0 to boardSizeMinusOne) 
+          yield cells(c)(rowNum)    
+  }
 
+  def col(colNum: Int): Seq[CellState] = {
+        for (r <- 0 to boardSizeMinusOne) 
+          yield cells(colNum)(r)    
+  }
+  
+  def diagonalOne: Seq[CellState] = {
+      for (c <- 0 to boardSizeMinusOne) 
+        yield cells(c)(c)    
+  }
+  
+  def diagonalTwo: Seq[CellState] = {
+      for (c <- 0 to boardSizeMinusOne) 
+        yield cells(c)(boardSizeMinusOne - c)    
+  }
+  
   def winner: CellState = {
 
     def winnerForLine(line: Seq[CellState]): Option[CellState] = {
-      if (boardSize == line.count(_ == X)) return Some(X)
-      if (boardSize == line.count(_ == O)) return Some(O)
+      def cellOccupiedBy(player: CellState)(boardCell: CellState) = player == boardCell
+      
+      if (boardSize == line.count(cellOccupiedBy(X))) return Some(X)
+      if (boardSize == line.count(cellOccupiedBy(O))) return Some(O)
       return None
     }
 
     for (r <- 0 to boardSizeMinusOne) {
-      val cellsInRow = for (c <- 0 to boardSizeMinusOne) yield cells(c)(r)
-      val winnerOrNot = winnerForLine(cellsInRow)
+      val winnerOrNot = winnerForLine(row(r))
       if (winnerOrNot != None) return winnerOrNot.get
     }
 
     for (c <- 0 to boardSizeMinusOne) {
-      val cellsInColumn = for (r <- 0 to boardSizeMinusOne) yield cells(c)(r)
-      val winnerOrNot = winnerForLine(cellsInColumn)
+      val winnerOrNot = winnerForLine(col(c))
       if (winnerOrNot != None) return winnerOrNot.get
     }
 
-    val cellsInDiagionalOne = for (c <- 0 to boardSizeMinusOne) yield cells(c)(c)
-    val winnerOrNot1 = winnerForLine(cellsInDiagionalOne)
+    val winnerOrNot1 = winnerForLine(diagonalOne)
     if (winnerOrNot1 != None) return winnerOrNot1.get
-
-    val cellsInDiagionalTwo = for (c <- 0 to boardSizeMinusOne) yield cells(c)(boardSizeMinusOne - c)
-    val winnerOrNot2 = winnerForLine(cellsInDiagionalTwo)
+        
+    val winnerOrNot2 = winnerForLine(diagonalTwo)
     if (winnerOrNot2 != None) return winnerOrNot2.get
 
     return Clear
