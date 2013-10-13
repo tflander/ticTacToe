@@ -7,36 +7,37 @@ class Blocker(icon: CellState) extends AiRule {
   val opponent = if (icon == X) O else X
 
   override def squareToPlay(board: Board): Option[(Int, Int)] = {
+
+    def mustIBlockThisTurn = canWinThisTurn(board, opponent)(_)
+    def winningPosition = winningPositionOnBoardForCellSequence(board)(_)
+
     for (r <- 0 to board.boardSizeMinusOne) {
-      val row = board.row(r)
-      if (board.boardSizeMinusOne == row.count(_ == opponent)) {
-        for (c <- 0 to board.boardSizeMinusOne) {
-          if (row(c) == Clear) return Some((c, r))
-        }
+      val cells = board.row(r)
+      if (mustIBlockThisTurn(cells)) {
+        return Some((winningPosition(cells), r))
       }
     }
 
     for (c <- 0 to board.boardSizeMinusOne) {
-      val col = board.col(c)
-      if (board.boardSizeMinusOne == col.count(_ == opponent)) {
-        for (r <- 0 to board.boardSizeMinusOne) {
-          if (col(r) == Clear) return Some((c, r))
-        }
+      val cells = board.column(c)
+      if (mustIBlockThisTurn(cells)) {
+        return Some((c, winningPosition(cells)))
       }
     }
 
-    if (board.boardSizeMinusOne == board.diagonalOne.count(_ == opponent)) {
-      for (i <- 0 to board.boardSizeMinusOne) {
-        if (board.diagonalOne(i) == Clear) return Some((i, i))
-      }
+    val cellsInDiagOne = board.diagonalOne
+    if (mustIBlockThisTurn(cellsInDiagOne)) {
+      val i = winningPosition(cellsInDiagOne)
+      return Some((i, i))
     }
 
-    if (board.boardSizeMinusOne == board.diagonalTwo.count(_ == opponent)) {
-      for (i <- 0 to board.boardSizeMinusOne) {
-        if (board.diagonalTwo(i) == Clear) return Some((i, board.boardSizeMinusOne - i))
-      }
+    val cellsInDiagTwo = board.diagonalTwo
+    if (mustIBlockThisTurn(cellsInDiagTwo)) {
+      val i = winningPosition(cellsInDiagTwo)
+      return Some((i, board.boardSizeMinusOne - i))
     }
-    None
+
+    return None
   }
 
 }

@@ -38,7 +38,7 @@ class Board(cells: Array[Array[CellState]]) {
           yield cells(c)(rowNum)    
   }
 
-  def col(colNum: Int): Seq[CellState] = {
+  def column(colNum: Int): Seq[CellState] = {
         for (r <- 0 to boardSizeMinusOne) 
           yield cells(colNum)(r)    
   }
@@ -69,7 +69,7 @@ class Board(cells: Array[Array[CellState]]) {
     }
 
     for (c <- 0 to boardSizeMinusOne) {
-      val winnerOrNot = winnerForLine(col(c))
+      val winnerOrNot = winnerForLine(column(c))
       if (winnerOrNot != None) return winnerOrNot.get
     }
 
