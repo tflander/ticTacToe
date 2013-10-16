@@ -17,9 +17,9 @@ class SmartestAi(icon: CellState) extends ComputerPlayer {
     new CornerNearOpponent(icon),
     new Priority(icon))
 
-  override def takeSquare(board: Board): Board = {
+  override def takeSquare(implicit board: Board): Board = {
     require(!board.gameOver)
 
-    return board.setCellState(applyRules(rules, board).get, icon)
+    return board.setCellState(calcNextMove(rules).get, icon)
   }
 }

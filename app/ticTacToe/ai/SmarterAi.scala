@@ -10,9 +10,9 @@ class SmarterAi(icon: CellState) extends ComputerPlayer {
   val randomAi = new RandomAi(icon)
   val rules = Seq(new Winner(icon), new Blocker(icon))
   
-  override def takeSquare(board: Board): Board = {
+  override def takeSquare(implicit board: Board): Board = {
     require(!board.gameOver)
-    applyRules(rules, board) match {
+    calcNextMove(rules) match {
       case None => 
       case Some(square: (Int, Int)) => return board.setCellState(square, icon)      
     }

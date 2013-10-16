@@ -5,9 +5,9 @@ import ticTacToe.ai.rule.AiRule
 
 trait ComputerPlayer {
 
-  def takeSquare(board: Board): Board
+  def takeSquare(implicit board: Board): Board
 
-  def applyRules(rules: Seq[AiRule], board: Board): Option[(Int, Int)] = {
+  def calcNextMove(rules: Seq[AiRule])(implicit board: Board): Option[(Int, Int)] = {
     for (rule <- rules) {
       rule.squareToPlay(board) match {
         case None =>
