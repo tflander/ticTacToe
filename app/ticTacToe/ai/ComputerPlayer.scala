@@ -7,7 +7,11 @@ trait ComputerPlayer {
 
   def takeSquare(implicit board: Board): Board
 
-  def calcNextMove(rules: Seq[AiRule])(implicit board: Board): Option[(Int, Int)] = {
+  def calcNextMove(rules: Seq[AiRule])(implicit board: Board): (Int, Int) = {
+	  calcNextMoveOption(rules).get
+  }
+  
+  def calcNextMoveOption(rules: Seq[AiRule])(implicit board: Board): Option[(Int, Int)] = {
     for (rule <- rules) {
       rule.squareToPlay(board) match {
         case None =>

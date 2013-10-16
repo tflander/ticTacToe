@@ -20,6 +20,6 @@ class SmartestAi(icon: CellState) extends ComputerPlayer {
   override def takeSquare(implicit board: Board): Board = {
     require(!board.gameOver)
 
-    return board.setCellState(calcNextMove(rules).get, icon)
+    return board.setCellState(calcNextMove(rules), icon)
   }
 }

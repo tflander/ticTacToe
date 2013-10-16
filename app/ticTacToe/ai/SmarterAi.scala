@@ -12,7 +12,7 @@ class SmarterAi(icon: CellState) extends ComputerPlayer {
   
   override def takeSquare(implicit board: Board): Board = {
     require(!board.gameOver)
-    calcNextMove(rules) match {
+    calcNextMoveOption(rules) match {
       case None => 
       case Some(square: (Int, Int)) => return board.setCellState(square, icon)      
     }
