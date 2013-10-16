@@ -15,8 +15,8 @@ class RandomAi(icon: CellState) extends ComputerPlayer {
     def randomEmptySquare(board: Board): (Int, Int) = {
       
       while(true) {
-        val col = random.nextInt(3) 
-        val row = random.nextInt(3)
+        val col = random.nextInt(board.boardSize) 
+        val row = random.nextInt(board.boardSize)
         if (board.cellState(col, row) == Clear) {
           return (col, row)
         }
