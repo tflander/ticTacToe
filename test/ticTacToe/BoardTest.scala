@@ -4,7 +4,7 @@ import CellState._
 
 class BoardTest extends FunSpec with ShouldMatchers {
 
-  describe("board manipulation") {
+  describe("board manipulation")  {
     it("should create an empty board") {
       val board = Board()
 
