@@ -18,7 +18,7 @@ object Application extends Controller {
   }
 
   def move(setup: String) = Action {
-    val cellStates = BoardState.get(setup)
+    val cellStates = BoardState get setup 
     val board = Board()
     	.setCellState(0, 0, cellStates(0))
     	.setCellState(1, 0, cellStates(1))
