@@ -20,7 +20,6 @@ class SmartestAi(icon: CellState) extends ComputerPlayer {
   override def takeSquare(board: Board): Board = {
     require(!board.gameOver)
 
-    val square = applyRules(rules, board).get
-    return board.setCellState(square._1, square._2, icon)
+    return board.setCellState(applyRules(rules, board).get, icon)
   }
 }

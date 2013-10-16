@@ -26,7 +26,7 @@ class RandomAi(icon: CellState) extends ComputerPlayer {
     }
     
     val square = randomEmptySquare(board) 
-    board.setCellState(square._1, square._2, icon)
+    board.setCellState(square, icon)
   }
 
 }
