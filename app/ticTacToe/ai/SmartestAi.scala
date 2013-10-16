@@ -10,36 +10,17 @@ import ticTacToe.ai.rule.CornerNearOpponent
 
 class SmartestAi(icon: CellState) extends ComputerPlayer {
 
-  val priority = new Priority(icon)
-  val cornerNearOpponent = new CornerNearOpponent(icon)
-  val opener = new Opener(icon)
-  val winner = new Winner(icon)
-  val blocker = new Blocker(icon)
-  val opponent = if (icon == X) O else X
+  val rules = Seq(
+    new Opener(icon),
+    new Winner(icon),
+    new Blocker(icon),
+    new CornerNearOpponent(icon),
+    new Priority(icon))
 
   override def takeSquare(board: Board): Board = {
     require(!board.gameOver)
 
-    opener.squareToPlay(board) match {
-      case None => 
-      case Some(square: (Int, Int)) => return board.setCellState(square, icon)      
-    }
-    
-    winner.squareToPlay(board) match {
-      case None => 
-      case Some(square: (Int, Int)) => return board.setCellState(square, icon)      
-    }
-    
-    blocker.squareToPlay(board) match {
-      case None => 
-      case Some(square: (Int, Int)) => return board.setCellState(square, icon)
-    }
-    
-    cornerNearOpponent.squareToPlay(board) match {
-      case None => 
-      case Some(square: (Int, Int)) => return board.setCellState(square, icon)
-    }
-    
-    return board.setCellState(priority.squareToPlay(board).get, icon)
+    val square = applyRules(rules, board).get
+    return board.setCellState(square._1, square._2, icon)
   }
 }
