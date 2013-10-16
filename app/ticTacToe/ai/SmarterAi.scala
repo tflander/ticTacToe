@@ -7,7 +7,6 @@ import ticTacToe.ai.rule.Winner
 
 class SmarterAi(icon: CellState) extends ComputerPlayer {
 
-  val randomAi = new RandomAi(icon)
   val rules = Seq(new Winner(icon), new Blocker(icon))
   
   override def takeSquare(implicit board: Board): Board = {
@@ -16,6 +15,6 @@ class SmarterAi(icon: CellState) extends ComputerPlayer {
       case None => 
       case Some(square: (Int, Int)) => return board.setCellState(square, icon)      
     }
-    return randomAi.takeSquare(board)
+    return board.setCellState(randomEmptySquare, icon)
   }
 }
