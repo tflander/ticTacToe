@@ -7,67 +7,74 @@ class BlockerTest extends FunSpec with ShouldMatchers {
 
   describe("when squareToPlay") {
     it("should block a win horizontally") {
-      val board = Board()
-        .setCellState(1, 0, X)
-        .setCellState(2, 0, X)
+
+      val board = Board(
+        (Clear, X,     X    ),
+        (Clear, O,     Clear),
+        (Clear, Clear, Clear))
 
       val ai = new Blocker(O)
-      ai.squareToPlay(board) should be (Some(0, 0))
+      ai.squareToPlay(board) should be(Some(0, 0))
     }
   }
 
   describe("when takeSquare") {
-    
+
     it("should block a win horizontally") {
-      val board = Board()
-        .setCellState(1, 0, X)
-        .setCellState(2, 0, X)
+      val board = Board(
+        (Clear, X,     X    ),
+        (Clear, O,     Clear),
+        (Clear, Clear, Clear))
 
       val ai = new Blocker(O)
       val updatedBoard = ai.squareToPlay(board)
-      ai.squareToPlay(board) should be (Some(0, 0))
+      ai.squareToPlay(board) should be(Some(0, 0))
     }
-    
+
     it("should block a win vertically") {
-      val board = Board()
-        .setCellState(0, 1, X)
-        .setCellState(0, 2, X)
+       val board = Board(
+        (Clear, Clear, Clear),
+        (X,     O,     Clear),
+        (X,     Clear, Clear))
 
       val ai = new Blocker(O)
       val updatedBoard = ai.squareToPlay(board)
-      ai.squareToPlay(board) should be (Some(0, 0))
+      ai.squareToPlay(board) should be(Some(0, 0))
     }
-    
+
     it("should block a win on diagonal one") {
-      val board = Board()
-        .setCellState(0, 0, X)
-        .setCellState(1, 1, X)
+      val board = Board(
+        (X,     Clear,     O),
+        (Clear, X,     Clear),
+        (Clear, Clear, Clear))
 
       val ai = new Blocker(O)
       val updatedBoard = ai.squareToPlay(board)
-      ai.squareToPlay(board) should be (Some(2, 2))
+      ai.squareToPlay(board) should be(Some(2, 2))
     }
 
     it("should block a win on diagonal two") {
-      val board = Board()
-        .setCellState(0, 2, X)
-        .setCellState(1, 1, X)
+      val board = Board(
+        (O,     Clear, X    ),
+        (Clear, X,     Clear),
+        (Clear, Clear, Clear))
 
       val ai = new Blocker(O)
       val updatedBoard = ai.squareToPlay(board)
-      ai.squareToPlay(board) should be (Some(2, 0))
+      ai.squareToPlay(board) should be(Some(2, 0))
     }
-    
+
     it("should return None when not threatened with a loss") {
-      val board = Board()
-        .setCellState(0, 1, X)
-        .setCellState(1, 0, X)
+      val board = Board(
+        (X,     Clear,  O   ),
+        (Clear, Clear, Clear),
+        (Clear, Clear, Clear))
 
       val ai = new Blocker(O)
       val updatedBoard = ai.squareToPlay(board)
-      ai.squareToPlay(board) should be (None)      
+      ai.squareToPlay(board) should be(None)
     }
-    
+
   }
 
 }

@@ -22,12 +22,11 @@ class PriorityTest extends FunSpec with ShouldMatchers {
     }
 
     it("should take an edge if the center and corners are occupied") {
-      val board = Board()
-        .setCellState((1, 1), X)
-        .setCellState((0, 0), X)
-        .setCellState((0, 2), X)
-        .setCellState((2, 0), X)
-        .setCellState((2, 2), X)
+
+      val board = Board(
+        (X, Clear, X),
+        (Clear, X, Clear),
+        (X, Clear, X))
 
       val ai = new Priority(O)
       ai.squareToPlay(board) should be(Some(1, 0))

@@ -10,16 +10,6 @@ class GameTest extends FunSpec with ShouldMatchers {
   var game: Game = _
   val runsPerTest = 10000
 
-  def reportWinnerFor(board: Board): CellState = {
-    val winner = board.winner
-    if (winner == Clear) {
-      println("\nCat\n")
-    } else {
-      println("\n" + winner + " wins\n")
-    }
-    return winner
-  }
-
   it("never loses as X") {
     def play = {
       game = new Game
@@ -52,4 +42,14 @@ class GameTest extends FunSpec with ShouldMatchers {
     for (i <- 1 to runsPerTest) play
   }
 
+  def reportWinnerFor(board: Board): CellState = {
+    val winner = board.winner
+    if (winner == Clear) {
+      println("\nCat\n")
+    } else {
+      println("\n" + winner + " wins\n")
+    }
+    return winner
+  }
+  
 }
