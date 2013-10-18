@@ -10,28 +10,28 @@ class Winner(icon: CellState) extends AiRule {
     def winningPosition = winningPositionOnBoardForCellSequence(board)(_)
     
     for (r <- 0 to board.boardSizeMinusOne) {
-      val cells = board.row(r)
-      if (canIWinThisTurn(cells)) {
-        return Some((winningPosition(cells), r))
+      val line = board.row(r)
+      if (canIWinThisTurn(line)) {
+        return Some((winningPosition(line), r))
       }
     }
 
     for (c <- 0 to board.boardSizeMinusOne) {
-      val cells = board.column(c)
-      if (canIWinThisTurn(cells)) {
-        return Some(c, (winningPosition(cells)))
+      val line = board.column(c)
+      if (canIWinThisTurn(line)) {
+        return Some(c, (winningPosition(line)))
       }
     }
 
-    val cellsInDiagOne = board.diagonalOne
-    if (canIWinThisTurn(cellsInDiagOne)) {
-      val i = winningPosition(cellsInDiagOne)
+    val diagOneLine = board.diagonalOne
+    if (canIWinThisTurn(diagOneLine)) {
+      val i = winningPosition(diagOneLine)
       return Some((i, i))
     }
 
-    val cellsInDiagTwo = board.diagonalTwo
-    if (canIWinThisTurn(cellsInDiagTwo)) {
-      val i = winningPosition(cellsInDiagTwo)
+    val diagTwoLine = board.diagonalTwo
+    if (canIWinThisTurn(diagTwoLine)) {
+      val i = winningPosition(diagTwoLine)
       return Some((i, board.boardSizeMinusOne - i))
     }
     

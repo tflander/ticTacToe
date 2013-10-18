@@ -12,28 +12,28 @@ class Blocker(icon: CellState) extends AiRule {
     def winningPosition = winningPositionOnBoardForCellSequence(board)(_)
 
     for (r <- 0 to board.boardSizeMinusOne) {
-      val cells = board.row(r)
-      if (mustIBlockThisTurn(cells)) {
-        return Some((winningPosition(cells), r))
+      val line = board.row(r)
+      if (mustIBlockThisTurn(line)) {
+        return Some((winningPosition(line), r))
       }
     }
 
     for (c <- 0 to board.boardSizeMinusOne) {
-      val cells = board.column(c)
-      if (mustIBlockThisTurn(cells)) {
-        return Some((c, winningPosition(cells)))
+      val line = board.column(c)
+      if (mustIBlockThisTurn(line)) {
+        return Some((c, winningPosition(line)))
       }
     }
 
-    val cellsInDiagOne = board.diagonalOne
-    if (mustIBlockThisTurn(cellsInDiagOne)) {
-      val i = winningPosition(cellsInDiagOne)
+    val diagOneLine = board.diagonalOne
+    if (mustIBlockThisTurn(diagOneLine)) {
+      val i = winningPosition(diagOneLine)
       return Some((i, i))
     }
 
-    val cellsInDiagTwo = board.diagonalTwo
-    if (mustIBlockThisTurn(cellsInDiagTwo)) {
-      val i = winningPosition(cellsInDiagTwo)
+    val diagTwoLine = board.diagonalTwo
+    if (mustIBlockThisTurn(diagTwoLine)) {
+      val i = winningPosition(diagTwoLine)
       return Some((i, board.boardSizeMinusOne - i))
     }
 
