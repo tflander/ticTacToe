@@ -141,30 +141,35 @@ class BoardTest extends FunSpec with ShouldMatchers {
 
     it("know when X wins on diagonal one") {
       val board = Board()
-      val updatedBoard = board
-        .setCellState(0, 0, X)
-        .setCellState(1, 1, X)
-        .setCellState(2, 2, X)
+      val updatedBoard = Board(
+        (X,     Clear, Clear),
+        (Clear, X,     Clear),
+        (Clear, Clear, X    ))
+
       updatedBoard.winner should be(X)
     }
 
     it("know when X wins on diagonal two") {
       val board = Board()
-      val updatedBoard = board
-        .setCellState(0, 2, X)
-        .setCellState(1, 1, X)
-        .setCellState(2, 0, X)
+
+      val updatedBoard = Board(
+        (Clear, Clear, X    ),
+        (Clear, X,     Clear),
+        (X,     Clear, Clear))
+
       updatedBoard.winner should be(X)
     }
   }
 
   describe("turn management") {
     it("counts the number of turns played") {
+
       val board = Board()
-      val updatedBoard = board
-        .setCellState(0, 2, X)
-        .setCellState(1, 1, O)
-        .setCellState(2, 0, X)
+
+      val updatedBoard = Board(
+        (O, Clear, Clear),
+        (Clear, X, Clear),
+        (Clear, Clear, X))
 
       board.turnsPlayed should be(0)
       updatedBoard.turnsPlayed should be(3)
@@ -173,27 +178,35 @@ class BoardTest extends FunSpec with ShouldMatchers {
 
   it("knows if the game is over") {
     val emptyboard = Board()
-    
-    val boardForGameInProgress = Board(
-      (X,     O,     X),
-      (O,     X,     O),
-      (O,     Clear, Clear))
 
-    val completedBoard = Board(
+    val boardForGameInProgress = Board(
+      (X, O, X),
+      (O, X, O),
+      (O, Clear, Clear))
+
+    val boardWinnerIsX = Board(
+      (X, O, X),
+      (O, X, O),
+      (X, Clear, Clear))
+
+    val completedBoardToTie = Board(
       (X, O, X),
       (O, X, O),
       (O, X, O))
 
     emptyboard.gameOver should be(false)
     boardForGameInProgress.gameOver should be(false)
-    completedBoard.gameOver should be(true)
+    completedBoardToTie.gameOver should be(true)
+    boardWinnerIsX.gameOver should be(true)
   }
 
   describe("occupied squares") {
     it("should find them") {
-      val board = Board()
-        .setCellState(1, 1, X)
-        .setCellState(2, 2, X)
+
+      val board = Board(
+        (O, Clear, Clear),
+        (Clear, X, Clear),
+        (Clear, Clear, X))
 
       board.occupiedSquares(X) should be(Seq((1, 1), (2, 2)))
     }
