@@ -43,6 +43,55 @@ class BoardTest extends FunSpec with ShouldMatchers {
         board.setCellState(3, 3, X)
       }
     }
+    
+    it("should construct a populated board") {
+      val board = Board(
+        (Clear, Clear, Clear),
+        (X, X, X),
+        (O, O, O))
+
+      board.cellState(0, 0) should be(Clear)
+      board.cellState(1, 0) should be(Clear)
+      board.cellState(2, 0) should be(Clear)
+
+      board.cellState(0, 1) should be(X)
+      board.cellState(1, 1) should be(X)
+      board.cellState(2, 1) should be(X)
+
+      board.cellState(0, 2) should be(O)
+      board.cellState(1, 2) should be(O)
+      board.cellState(2, 2) should be(O)
+    }
+
+  }
+
+  describe("line checks") {
+    
+    it("should give you rows") {
+      val board = Board(
+        (Clear, Clear, Clear),
+        (X, X, X),
+        (O, O, O))
+
+      board.rows should be (Seq(
+       Seq(Clear, Clear, Clear),
+       Seq(X, X, X),
+       Seq(O, O, O)
+      ))
+    }
+
+    it("should give you columns") {
+      val board = Board(
+        (Clear, Clear, Clear),
+        (X, X, X),
+        (O, O, O))
+
+      board.columns should be (Seq(
+       Seq(Clear, X, O),
+       Seq(Clear, X, O),
+       Seq(Clear, X, O)
+      ))
+    }
   }
 
   describe("3 in a row horizontally") {
@@ -142,9 +191,9 @@ class BoardTest extends FunSpec with ShouldMatchers {
     it("know when X wins on diagonal one") {
       val board = Board()
       val updatedBoard = Board(
-        (X,     Clear, Clear),
-        (Clear, X,     Clear),
-        (Clear, Clear, X    ))
+        (X, Clear, Clear),
+        (Clear, X, Clear),
+        (Clear, Clear, X))
 
       updatedBoard.winner should be(X)
     }
@@ -153,9 +202,9 @@ class BoardTest extends FunSpec with ShouldMatchers {
       val board = Board()
 
       val updatedBoard = Board(
-        (Clear, Clear, X    ),
-        (Clear, X,     Clear),
-        (X,     Clear, Clear))
+        (Clear, Clear, X),
+        (Clear, X, Clear),
+        (X, Clear, Clear))
 
       updatedBoard.winner should be(X)
     }

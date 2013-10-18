@@ -52,14 +52,19 @@ class Board(cells: Array[Array[CellState]]) {
     for (c <- 0 to boardSizeMinusOne)
       yield cells(c)(boardSizeMinusOne - c)
   }
-
-  def allLines: Seq[Seq[CellState]] = {
-    val rows = for (r <- 0 to boardSizeMinusOne)
+  
+  def rows: Seq[Seq[CellState]] = {
+    for (r <- 0 to boardSizeMinusOne)
       yield row(r)
-    val cols = for (c <- 0 to boardSizeMinusOne)
+  }
+
+  def columns: Seq[Seq[CellState]] = {
+    for (c <- 0 to boardSizeMinusOne)
       yield column(c)
-    
-    rows ++ cols :+ diagonalOne :+ diagonalTwo
+  }
+  
+  def allLines: Seq[Seq[CellState]] = {
+    rows ++ columns :+ diagonalOne :+ diagonalTwo
   }
 
   def winner: CellState = {
@@ -115,15 +120,15 @@ object Board {
       Array(Clear, Clear, Clear)))
   }
   
-  def apply(row1: Array[CellState], row2: Array[CellState], row3: Array[CellState]): Board = {
-    new Board(Array(row1, row2, row3))
-  }
+//  def apply(row1: Array[CellState], row2: Array[CellState], row3: Array[CellState]): Board = {
+//    new Board(Array(row1, row2, row3))
+//  }
   
   def apply(row1: (CellState, CellState, CellState), row2: (CellState, CellState, CellState), row3: (CellState, CellState, CellState)): Board = {
     new Board(Array(
-        Array(row1._1, row1._2, row1._3), 
-        Array(row2._1, row2._2, row2._3), 
-        Array(row3._1, row3._2, row3._3)))
+        Array(row1._1, row2._1, row3._1), 
+        Array(row1._2, row2._2, row3._2), 
+        Array(row1._3, row2._3, row3._3)))
   }
   
   def apply(cells: Array[Array[CellState]]): Board = {

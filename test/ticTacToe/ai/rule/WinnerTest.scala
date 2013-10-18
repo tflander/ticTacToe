@@ -33,11 +33,11 @@ class WinnerTest extends FunSpec with ShouldMatchers {
     it("should win vertically") {
       val board = Board(
         (Clear, Clear, Clear),
-        (X, Clear, Clear),
-        (X, Clear, Clear))
+        (Clear, Clear, X),
+        (Clear, Clear, X))
       val ai = new Winner(X)
       val updatedBoard = ai.squareToPlay(board)
-      ai.squareToPlay(board) should be(Some(0, 0))
+      ai.squareToPlay(board) should be(Some(2, 0))
     }
 
     it("should win on diagonal one") {
@@ -59,7 +59,7 @@ class WinnerTest extends FunSpec with ShouldMatchers {
 
       val ai = new Winner(X)
       val updatedBoard = ai.squareToPlay(board)
-      ai.squareToPlay(board) should be(Some(2, 0))
+      ai.squareToPlay(board) should be(Some(0, 2))
     }
 
     it("should return None when no move to win") {

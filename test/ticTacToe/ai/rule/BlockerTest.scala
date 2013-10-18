@@ -61,7 +61,7 @@ class BlockerTest extends FunSpec with ShouldMatchers {
 
       val ai = new Blocker(O)
       val updatedBoard = ai.squareToPlay(board)
-      ai.squareToPlay(board) should be(Some(2, 0))
+      ai.squareToPlay(board) should be(Some(0, 2))
     }
 
     it("should return None when not threatened with a loss") {

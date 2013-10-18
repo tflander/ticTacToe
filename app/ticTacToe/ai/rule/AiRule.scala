@@ -26,11 +26,4 @@ trait AiRule {
     return iHaveAllButOne && oneIsClear
   }
 
-  def winningPositionOnBoardForCellSequence(board: Board)(cells: Seq[CellState]): Int = {
-    for (i <- 0 to board.boardSizeMinusOne) {
-      if (cells(i) == Clear) return i
-    }
-    throw new IllegalArgumentException("no clear cell available")
-  }
-
 }
