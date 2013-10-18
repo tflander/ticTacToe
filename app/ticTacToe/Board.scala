@@ -114,6 +114,23 @@ object Board {
       Array(Clear, Clear, Clear),
       Array(Clear, Clear, Clear)))
   }
+  
+  def apply(row1: Array[CellState], row2: Array[CellState], row3: Array[CellState]): Board = {
+    new Board(Array(row1, row2, row3))
+  }
+  
+  def apply(row1: (CellState, CellState, CellState), row2: (CellState, CellState, CellState), row3: (CellState, CellState, CellState)): Board = {
+    new Board(Array(
+        Array(row1._1, row1._2, row1._3), 
+        Array(row2._1, row2._2, row2._3), 
+        Array(row3._1, row3._2, row3._3)))
+  }
+  
+  def apply(cells: Array[Array[CellState]]): Board = {
+    new Board(cells)
+  }
+  
+  
 
   val corners = Seq(
     (0, 0),
