@@ -59,7 +59,7 @@ class Opener(icon: CellState) extends AiRule {
     }
 
     def takeAdjacentCornerIfOpponentTookEdge(): Option[(Int, Int)] = {
-      if (opponentsMove._1 == 1 || opponentsMove._2 == 1) {
+      if (opponentsMove._1 != opponentsMove._2 && (opponentsMove._1 == 1 || opponentsMove._2 == 1)) {
         opponentsMove match {
           case (0, 1) => return if (board.cellState(0, 0) == Clear) Some((0, 0)) else Some((0, 2))
           case (2, 1) => return if (board.cellState(2, 0) == Clear) Some((2, 0)) else Some((2, 2))

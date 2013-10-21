@@ -6,8 +6,14 @@ class Winner(icon: CellState) extends AiRule with LineAi {
 
   override def squareToPlay(board: Board): Option[(Int, Int)] = {
 
+    /*
+     * ideal DSL:
+     * 
+     *  return move to win 
+     * 
+     */
     def canIWinThisTurn = canWinThisTurn(board, icon)(_)
-    return moveFromRulesOrNone(buildRulesForBoard(canIWinThisTurn, board));
+    return move(buildRulesForBoard(canIWinThisTurn, board));
   }
   
 }

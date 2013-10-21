@@ -40,7 +40,7 @@ trait LineAi {
     return None
   }
 
-  def moveFromRulesOrNone(rules: Seq[Rule]): Option[(Int, Int)] = {
+  def move(rules: Seq[Rule]): Option[(Int, Int)] = {
     for (rule <- rules) {
       val winningPositionOrNot = applyRule(rule)
       if (winningPositionOrNot != None) {

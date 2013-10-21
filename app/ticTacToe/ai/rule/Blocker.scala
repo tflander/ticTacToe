@@ -8,8 +8,15 @@ class Blocker(icon: CellState) extends AiRule with LineAi {
 
   override def squareToPlay(board: Board): Option[(Int, Int)] = {
 
+    /*
+     * ideal DSL:
+     * 
+     *  return move to block 
+     * 
+     */
+    
     def mustIBlockThisTurn = canWinThisTurn(board, opponent)(_)
-    return moveFromRulesOrNone(buildRulesForBoard(mustIBlockThisTurn, board));
+    return move(buildRulesForBoard(mustIBlockThisTurn, board));
 
   }
 
