@@ -54,25 +54,26 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
     		  plays win 90% of the time, 
     		  and never misses a block
           """);
-//      println(aiRules)
-      // aiRules.successful should be(true)
+      aiRules.successful should be(true)
       // TODO:  validation
     }
 
     it("should create an AI that opens randomly, plays strong, but sometimes misses a block") {
       val aiRules = configBuilder.buildAi(X, "opens randomly, otherwise is unbeatable, except misses blocks 10% of the time");
-//      println(aiRules)
-      // aiRules.successful should be(true)
+      aiRules.successful should be(true)
       // TODO:  validation
     }
 
     it("should create an AI that is generally unbeatable, but sometimes misses a win") {
       val aiRules = configBuilder.buildAi(X, "is unbeatable, except misses wins 10% of the time");
+      aiRules.successful should be(true)
       // TODO:  validation
     }
 
     it("can short-hand an exception") {
       val aiRules = configBuilder.buildAi(X, "is unbeatable, except misses wins 10%");
+      println(aiRules)
+      aiRules.successful should be(true)
       // TODO:  validation      
     }
 
