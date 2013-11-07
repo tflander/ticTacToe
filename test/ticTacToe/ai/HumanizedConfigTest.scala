@@ -304,23 +304,26 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
 
     it("same as above, but can use 'and' to chain exception rules") {
       val aiRules = configBuilder.buildAi(X, "opens with center or corner, otherwise is random, blocks 90% of the time, and never misses a win");
-      println(aiRules)
       aiRules.successful should be(true)
       // TODO:  validation
     }
 
-    it("defensive ai using whitespace to stack vertically") {
+    it("supports using whitespace to stack vertically") {
       val aiRules = configBuilder.buildAi(X, """
           opens with center or corner, 
     		  otherwise is random, 
     		  plays win 90% of the time, 
     		  and never misses a block
           """);
+//      println(aiRules)
+      // aiRules.successful should be(true)
       // TODO:  validation
     }
 
     it("should create an AI that opens randomly, plays strong, but sometimes misses a block") {
       val aiRules = configBuilder.buildAi(X, "opens randomly, otherwise is unbeatable, except misses blocks 10% of the time");
+//      println(aiRules)
+      // aiRules.successful should be(true)
       // TODO:  validation
     }
 
