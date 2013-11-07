@@ -28,20 +28,28 @@ import ticTacToe.ai.rule.CenterOrCorner
  */
 class ticTacToeAiParser(icon: CellState) extends JavaTokenParsers {
   def ai: Parser[Any] = "TBD"
+  def ruleSet: Parser[Any] = opt(openingRule <~ "," ~ opt("otherwise")) ~ primaryRule ~ opt("," ~> repsep(exception, "," ~ opt("and")))
+
   def probability: Parser[Double] = floatingPointNumber <~ probabilityDecorator ^^ (_.toDouble / 100)
   def probabilityDecorator: Parser[String] = "% of the time" | "%"
   def probableException: Parser[(AiRule, Double)] = probableRule ~ probability ^^ { case probableRule ~ probability => buildRule(probableRule, probability) }
-  def probableRule: Parser[String] = "misses wins" | "misses blocks"
+  def probableRule: Parser[String] = "misses wins" | "misses blocks" | "wins" | "blocks"
+
   def simpleException: Parser[AiRule] = simpleExceptionRule ^^ (buildRule(_))
   def simpleExceptionRule: Parser[String] = "never misses a win" | "never misses a block"
+
   def exception: Parser[Any] = simpleException | probableException
   def exceptionRule: Parser[Any] = exceptionDecorator ~> exception
   def exceptionDecorator: Parser[String] = "except" | "and" | ""
   def exceptionRules: Parser[List[Any]] = repsep(exceptionRule, ",")
+
   def primaryRuleName: Parser[String] = "random" | "unbeatable"
-  def primaryRule: Parser[Seq[AiRule]] = primaryRuleName ^^ (buildPrimaryRule(_))
-  def openingRule: Parser[AiRule] = openingRuleName ^^ (buildOpeningRule(_))
+  def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> primaryRuleName ^^ (buildPrimaryRule(_))
+  def primaryRuleDecorator: Parser[String] = "is" | ""
+
+  def openingRule: Parser[AiRule] = openingDecorator ~> openingRuleName ^^ (buildOpeningRule(_))
   def openingRuleName: Parser[String] = "randomly" | "with center or corner"
+  def openingDecorator: Parser[String] = "opens" | ""
 
   def buildOpeningRule(rule: String) = {
     rule match {
@@ -49,23 +57,25 @@ class ticTacToeAiParser(icon: CellState) extends JavaTokenParsers {
       case "with center or corner" => new CenterOrCorner(icon)
     }
   }
-  
+
   def buildRule(probableRule: String, probability: Double) = {
     probableRule match {
-      case "misses wins" => (new Winner(icon), probability)
-      case "misses blocks" => (new Blocker(icon), probability)
+      case "misses wins" => (new Winner(icon), 1 - probability)
+      case "misses blocks" => (new Blocker(icon), 1 - probability)
+      case "wins" => (new Winner(icon), probability)
+      case "blocks" => (new Blocker(icon), probability)
     }
   }
-  
+
   def buildPrimaryRule(rule: String) = {
     rule match {
       case "unbeatable" => {
-            Seq(
-      new Opener(icon),
-      new Winner(icon),
-      new Blocker(icon),
-      new CornerNearOpponent(icon),
-      new Priority(icon))
+        Seq(
+          new Opener(icon),
+          new Winner(icon),
+          new Blocker(icon),
+          new CornerNearOpponent(icon),
+          new Priority(icon))
       }
       case "random" => {
         Seq(new RandomRule(icon))
@@ -82,7 +92,10 @@ class ticTacToeAiParser(icon: CellState) extends JavaTokenParsers {
 }
 
 class ConfigSpike(icon: CellState) extends ticTacToeAiParser(icon) {
-  def buildAi(icon: CellState, string: String) = Nil
+  // Main driver (SRP Smell)
+  def buildAi(icon: CellState, string: String) = parseAll(ruleSet, string)
+
+  // parsers for testing at different levels
   def parseAi(string: String) = parseAll(ai, string)
   def parseProbability(string: String) = parseAll(probability, string)
   def parseProbableException(string: String) = parseAll(probableException, string)
@@ -97,33 +110,46 @@ class ConfigSpike(icon: CellState) extends ticTacToeAiParser(icon) {
 class HumanizedConfigTest extends FunSpec with ShouldMatchers {
 
   val configBuilder = new ConfigSpike(X)
-  
+
   describe("when openingRule") {
-    
+
     it("can open randomly") {
       val p = configBuilder.parseOpeningRule("randomly")
       p.successful should be(true)
       p.get.getClass.getSimpleName should be("RandomRule")
     }
-    
+
     it("can open strong") {
       val p = configBuilder.parseOpeningRule("with center or corner")
       p.successful should be(true)
       p.get.getClass.getSimpleName should be("CenterOrCorner")
     }
+
+    it("supports decorator 'opens'") {
+      val p = configBuilder.parseOpeningRule("opens with center or corner")
+      p.successful should be(true)
+      p.get.getClass.getSimpleName should be("CenterOrCorner")
+    }
   }
-  
+
   describe("when primary rule") {
-    
+
     it("creates an unbeatable AI") {
       val p = configBuilder.parsePrimaryRule("unbeatable")
       p.successful should be(true)
       val rules = p.get.map(_.getClass.getSimpleName)
       rules should be(List("Opener", "Winner", "Blocker", "CornerNearOpponent", "Priority"))
     }
-    
+
     it("creates a random AI") {
       val p = configBuilder.parsePrimaryRule("random")
+      p.successful should be(true)
+      val rules = p.get.map(_.getClass.getSimpleName)
+      rules should be(List("RandomRule"))
+    }
+
+    it("supports decoration with 'is'") {
+      val p = configBuilder.parsePrimaryRule("is random")
       p.successful should be(true)
       val rules = p.get.map(_.getClass.getSimpleName)
       rules should be(List("RandomRule"))
@@ -136,16 +162,16 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       p.successful should be(true)
       p.get.head.getClass.getSimpleName should be("Blocker")
     }
-    
+
     it("parses multiple rules") {
       val p = configBuilder.parseExceptionRules("never misses a block, and never misses a win")
       p.successful should be(true)
       val rules = p.get.map(_.getClass.getSimpleName)
-      
+
       rules should be(List("Blocker", "Winner"))
     }
   }
-  
+
   describe("when exception rule") {
 
     it("parses exception without additional decoration") {
@@ -153,13 +179,13 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       p.successful should be(true)
       p.get.getClass.getSimpleName should be("Blocker")
     }
-    
+
     it("allows the decorator 'and'") {
       val p = configBuilder.parseExceptionRule("and never misses a block")
       p.successful should be(true)
       p.get.getClass.getSimpleName should be("Blocker")
     }
-    
+
     it("allows the decorator 'except'") {
       val p = configBuilder.parseExceptionRule("except never misses a block")
       p.successful should be(true)
@@ -175,7 +201,7 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       p.get match {
         case ruleAndProbability: (Any, Any) => {
           ruleAndProbability._1.getClass.getSimpleName should be("Winner")
-          ruleAndProbability._2 should be(0.15)
+          ruleAndProbability._2 should be(0.85)
         }
       }
     }
@@ -205,20 +231,33 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
 
   describe("when parse probable exception") {
 
+    it("allows specifying the blocking exception") {
+      val p = configBuilder.parseProbableException("blocks 90% of the time")
+      p.successful should be(true)
+      p.get._1.getClass.getSimpleName should be("Blocker")
+      p.get._2 should be(0.9)
+    }
+
+    it("allows specifying the winning exception") {
+      val p = configBuilder.parseProbableException("wins 90% of the time")
+      p.successful should be(true)
+      p.get._1.getClass.getSimpleName should be("Winner")
+      p.get._2 should be(0.9)
+    }
+
     it("should parse the exception for winning") {
       val p = configBuilder.parseProbableException("misses wins 10% of the time")
       p.successful should be(true)
       p.get._1.getClass.getSimpleName should be("Winner")
-      p.get._2 should be(0.1)
+      p.get._2 should be(0.9)
     }
 
     it("should parse the exception for blocking") {
       val p = configBuilder.parseProbableException("misses blocks 10% of the time")
       p.successful should be(true)
       p.get._1.getClass.getSimpleName should be("Blocker")
-      p.get._2 should be(0.1)
+      p.get._2 should be(0.9)
     }
-
   }
 
   describe("when parse probability") {
@@ -241,26 +280,32 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
 
     it("should create an unbeatable AI") {
       val aiRules = configBuilder.buildAi(X, "is unbeatable");
+      aiRules.successful should be(true)
       // TODO:  validation
     }
 
     it("should create an AI that opens randomly") {
       val aiRules = configBuilder.buildAi(X, "opens randomly, otherwise is unbeatable");
+      aiRules.successful should be(true)
       // TODO:  validation
     }
 
     it("should create an AI that opens with center or corner, then moves randomly") {
       val aiRules = configBuilder.buildAi(X, "opens with center or corner, otherwise is random");
+      aiRules.successful should be(true)
       // TODO:  validation
     }
 
     it("should create an AI that opens with center or corner, then moves randomly, misses blocks 10% of the time") {
       val aiRules = configBuilder.buildAi(X, "opens with center or corner, otherwise is random, blocks 90% of the time, never misses a win");
+      aiRules.successful should be(true)
       // TODO:  validation
     }
 
     it("same as above, but can use 'and' to chain exception rules") {
       val aiRules = configBuilder.buildAi(X, "opens with center or corner, otherwise is random, blocks 90% of the time, and never misses a win");
+      println(aiRules)
+      aiRules.successful should be(true)
       // TODO:  validation
     }
 
