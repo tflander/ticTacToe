@@ -6,21 +6,21 @@ import ticTacToe.ai.HumanizedAi
 
 class HumanizedConfigBuilder(icon: CellState) {
 
-  def smartest = {
-    val level = 1.0
-    Seq(
-      (new Opener(icon), level),
-      (new Winner(icon), level),
-      (new Blocker(icon), level),
-      (new CornerNearOpponent(icon), level),
-      (new Priority(icon), level))
-  }
+//  def smartest = {
+//    val level = 1.0
+//    Seq(
+//      (new Opener(icon), level),
+//      (new Winner(icon), level),
+//      (new Blocker(icon), level),
+//      (new CornerNearOpponent(icon), level),
+//      (new Priority(icon), level))
+//  }
 
 }
 
-object HumanizedConfigBuilder {
-  def buildAi(icon: CellState, config: String): Seq[(AiRule, Double)] = {
-    val a = new HumanizedConfigBuilder(icon)
-    return a.smartest
-  }
-}
+//object HumanizedConfigBuilder {
+//  def buildAi(icon: CellState, config: String): Seq[(AiRule, Double)] = {
+//    val a = new HumanizedConfigBuilder(icon)
+//    return a.smartest
+//  }
+//}

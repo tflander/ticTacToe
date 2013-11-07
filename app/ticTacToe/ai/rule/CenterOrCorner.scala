@@ -13,7 +13,8 @@ class CenterOrCorner(icon: CellState) extends AiRule {
         case 0 => takeCenter()
         case _ => takeCorner()
       }
-      if(!availableMoves.contains(candidate.get))
+      
+      if(availableMoves.contains(candidate.get))
         return candidate
     }
     None
