@@ -25,5 +25,18 @@ trait AiRule {
     val oneIsClear = 1 == cells.count(_ == Clear)
     return iHaveAllButOne && oneIsClear
   }
+  
+  def randomEmptySquare(implicit board: Board): (Int, Int) = {
+
+    while (true) {
+      val col = random.nextInt(board.boardSize)
+      val row = random.nextInt(board.boardSize)
+      if (board.cellState(col, row) == Clear) {
+        return (col, row)
+      }
+    }
+
+    (0, 0)
+  }
 
 }
