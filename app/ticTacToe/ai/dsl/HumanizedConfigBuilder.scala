@@ -6,15 +6,6 @@ import ticTacToe.ai.HumanizedAi
 
 class HumanizedConfigBuilder(icon: CellState) {
 
-//  def smartest = {
-//    val level = 1.0
-//    Seq(
-//      (new Opener(icon), level),
-//      (new Winner(icon), level),
-//      (new Blocker(icon), level),
-//      (new CornerNearOpponent(icon), level),
-//      (new Priority(icon), level))
-//  }
 
 }
 
