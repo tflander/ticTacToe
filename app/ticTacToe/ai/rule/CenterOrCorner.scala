@@ -6,6 +6,7 @@ class CenterOrCorner(icon: CellState) extends AiRule {
 
   override def squareToPlay(board: Board): Option[(Int, Int)] = {
     val availableMoves = board.emptySquares
+    if(availableMoves.isEmpty) return None
 
     while (true) {
       val candidate = random.nextInt(5) match {
