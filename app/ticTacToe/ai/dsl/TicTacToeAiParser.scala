@@ -23,11 +23,10 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
   def simpleException: Parser[AiRule] = simpleExceptionRule ^^ (buildRule(_))
   def simpleExceptionRule: Parser[String] = "never misses a win" | "never misses a block"
 
-  // TODO:  can this be AiRule?
-  def exception: Parser[Any] = simpleException | probableException
-  def exceptionRule: Parser[Any] = exceptionDecorator ~> exception
+  def exception: Parser[AiRule] = simpleException | probableException
+  def exceptionRule: Parser[AiRule] = exceptionDecorator ~> exception
   def exceptionDecorator: Parser[String] = "except" | "and" | ""
-  def exceptionRules: Parser[List[Any]] = repsep(exceptionRule, ",")
+  def exceptionRules: Parser[List[AiRule]] = repsep(exceptionRule, ",")
 
   def primaryRuleName: Parser[String] = "random" | "unbeatable"
   def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> primaryRuleName ^^ (buildPrimaryRule(_))

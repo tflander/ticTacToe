@@ -6,7 +6,7 @@ import ticTacToe.ai.rule.ProbableRule
 class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
 
   class ConfigSpike(icon: CellState) extends TicTacToeAiParser(icon) {
-    //  def parseAi(string: String) = parseAll(ai, string)
+
     def parseProbability(string: String) = parseAll(probability, string)
     def parseProbableException(string: String) = parseAll(probableException, string)
     def parseSimpleException(string: String) = parseAll(simpleException, string)
@@ -103,7 +103,6 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
     
     it("allows the decorator 'except' with a probability rule") {
       val p = configBuilder.parseExceptionRule("except misses blocks 10% of the time")
-      println(p)
       p.successful should be(true)
 
       p.get match {
