@@ -1,6 +1,5 @@
 package ticTacToe.ai
 import org.scalatest._
-import ticTacToe.ai.dsl.HumanizedConfigBuilder
 import ticTacToe.ai.dsl._
 import ticTacToe.CellState._
 import scala.util.parsing.combinator.JavaTokenParsers
