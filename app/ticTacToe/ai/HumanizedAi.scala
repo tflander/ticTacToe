@@ -8,6 +8,7 @@ import ticTacToe.ai.rule.Opener
 import ticTacToe.ai.rule.Priority
 import ticTacToe.ai.rule.CornerNearOpponent
 import ticTacToe.ai.rule.AiRule
+import ticTacToe.ai.dsl.TicTacToeAiParser
 
 class HumanizedAi(icon: CellState, openingRule: Option[AiRule], primaryRules: Seq[AiRule], exceptionRules: Seq[AiRule]) extends ComputerPlayer {
   require(!primaryRules.isEmpty, "Primary Ai Rules are required.  Found an empty list")
@@ -46,6 +47,26 @@ class HumanizedAi(icon: CellState, openingRule: Option[AiRule], primaryRules: Se
     }
 
     return board.setCellState(move, icon)
+
+  }
+
+  object HumanizedAi {
+    
+    val xConfigParser = new ConfigParser(X)
+    val oConfigParser = new ConfigParser(O)
+
+    def apply(icon: CellState, config: String) = {
+    	val configParser = icon match {
+    	  case X => xConfigParser
+    	  case O => oConfigParser
+    	}
+    	
+//    	val a = configParser.b
+    }
+
+    class ConfigParser(icon: CellState) extends TicTacToeAiParser(icon) {
+      def buildAi(string: String) = parseAll(ruleSet, string)
+    }
 
   }
 }
