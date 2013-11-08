@@ -20,6 +20,23 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
     it("should create an unbeatable AI") {
       val aiRules = configBuilder.buildAi(X, "is unbeatable");
       aiRules.successful should be(true)
+      println(aiRules.get)
+      /*
+(
+  (
+    None 
+    ~ 
+    List(
+      ticTacToe.ai.rule.Opener@79ee2c2c, 
+      ticTacToe.ai.rule.Winner@3963b3e, 
+      ticTacToe.ai.rule.Blocker@7c0b6548, 
+      ticTacToe.ai.rule.CornerNearOpponent@50269997, 
+      ticTacToe.ai.rule.Priority@162db19d))
+      ~
+      None
+  )
+
+       */
       // TODO:  validation
     }
 

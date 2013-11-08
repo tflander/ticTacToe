@@ -9,32 +9,43 @@ import ticTacToe.ai.rule.Priority
 import ticTacToe.ai.rule.CornerNearOpponent
 import ticTacToe.ai.rule.AiRule
 
-class HumanizedAi(icon: CellState, rulesWithOdds: Seq[(AiRule, Double)]) extends ComputerPlayer {
-
+class HumanizedAi(icon: CellState, openingRule: Option[AiRule], primaryRules: Seq[AiRule], exceptionRules: Seq[AiRule]) extends ComputerPlayer {
+  require(!primaryRules.isEmpty, "Primary Ai Rules are required.  Found an empty list")
+  
   override def takeSquare(implicit board: Board): Board = {
     require(!board.gameOver)
-
-    def humanizedCalcNextMoveOption(implicit board: Board): Option[(Int, Int)] = {
-      for (ruleWithOdds <- rulesWithOdds) {
-        val rule = ruleWithOdds._1
-        val odds = ruleWithOdds._2
-
-        val rnd = random.nextDouble
-
-        if (rnd <= odds) {
-          rule.squareToPlay(board) match {
-            case None =>
-            case Some(square: (Int, Int)) => return Some(square)
-          }
-        }
+    
+    def move: (Int, Int) = {
+      
+    // play opening rule if first or second move
+    if(board.turnsPlayed < 2 && openingRule != None) {
+      openingRule.get.squareToPlay(board) match {
+        case Some(move: (Int, Int)) => return move
+        case None => 
       }
-      return None
+    }
+    
+    // play exception rule if it applies
+    for (rule <- exceptionRules) {
+      rule.squareToPlay(board) match {
+        case Some(move: (Int, Int)) => return move        
+        case None => 
+      }
+    }
+    
+    // play primary rules
+    for (rule <- primaryRules) {
+      rule.squareToPlay(board) match {
+        case Some(move: (Int, Int)) => return move        
+        case None => 
+      }
     }
 
-    humanizedCalcNextMoveOption match {
-      case None =>
-      case Some(square: (Int, Int)) => return board.setCellState(square, icon)
+    // play random
+    return randomEmptySquare
     }
-    return board.setCellState(randomEmptySquare, icon)
+
+    return board.setCellState(move, icon)
+    
   }
 }

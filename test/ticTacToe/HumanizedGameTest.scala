@@ -10,6 +10,7 @@ import ticTacToe.ai.rule.Winner
 import ticTacToe.ai.rule.Blocker
 import ticTacToe.ai.rule.CornerNearOpponent
 import ticTacToe.ai.rule.Priority
+import ticTacToe.ai.rule.ProbableRule
 
 class HumanizedGameTest extends FunSpec with ShouldMatchers {
 
@@ -18,20 +19,20 @@ class HumanizedGameTest extends FunSpec with ShouldMatchers {
 
   def humanizedPlayer(icon: CellState, level: Double) = {
     val rulesWithOdds = Seq(
-          (new Opener(icon), level), 
-          (new Winner(icon), level), 
-          (new Blocker(icon), level), 
-          (new CornerNearOpponent(icon), level),
-          (new Priority(icon), level)
+          new ProbableRule(new Opener(icon), level), 
+          new ProbableRule(new Winner(icon), level), 
+          new ProbableRule(new Blocker(icon), level), 
+          new ProbableRule(new CornerNearOpponent(icon), level),
+          new ProbableRule(new Priority(icon), level)
     )
 
-    new HumanizedAi(icon, rulesWithOdds)
+    new HumanizedAi(icon, None, rulesWithOdds, Nil)
   }
 
   it("shows humanized stats") {
     def play: CellState = {
       game = new Game
-      val board = game.play(humanizedPlayer(X, 0.1), humanizedPlayer(O, 0.3))
+      val board = game.play(humanizedPlayer(X, 0.1), humanizedPlayer(O, 1.0))
       return board.winner
     }
     val stats = for (i <- 1 to runsPerTest) yield play
