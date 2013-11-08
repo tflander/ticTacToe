@@ -10,10 +10,13 @@ import ticTacToe.ai.rule.Priority
 import ticTacToe.ai.rule.RandomRule
 import ticTacToe.ai.rule.CenterOrCorner
 import ticTacToe.ai.rule.ProbableRule
+import ticTacToe.ai.HumanizedAi
 
 class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
 
-  def ruleSet: Parser[Any] = opt(openingRule <~ ",") ~ primaryRule ~ opt("," ~> exceptionRules)
+  def ruleSet: Parser[HumanizedAi] = opt(openingRule <~ ",") ~ primaryRule ~ opt("," ~> exceptionRules) ^^ {
+    case openingRule ~ primaryRule ~ exceptionRule => tempForNow(openingRule, primaryRule, exceptionRule)
+  }
 
   def probability: Parser[Double] = floatingPointNumber <~ probabilityDecorator ^^ (_.toDouble / 100)
   def probabilityDecorator: Parser[String] = "% of the time" | "%"
@@ -35,6 +38,14 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
   def openingRule: Parser[AiRule] = openingDecorator ~> openingRuleName ^^ (buildOpeningRule(_))
   def openingRuleName: Parser[String] = "randomly" | "with center or corner"
   def openingDecorator: Parser[String] = "opens" | ""
+  
+  def tempForNow(openingRule: Option[AiRule], primaryRule: Seq[AiRule], exceptionRule: Option[List[AiRule]]) = {
+    val exceptions = exceptionRule match {
+      case Some(rules: List[AiRule]) => rules
+      case None => Nil
+    }
+    new HumanizedAi(icon, openingRule, primaryRule, exceptions)
+  }
 
   def buildOpeningRule(rule: String) = {
     rule match {
