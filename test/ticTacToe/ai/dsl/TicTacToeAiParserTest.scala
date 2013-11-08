@@ -1,6 +1,7 @@
 package ticTacToe.ai.dsl
 import org.scalatest._
 import ticTacToe.CellState._
+import ticTacToe.ai.rule.ProbableRule
 
 class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
 
@@ -94,21 +95,21 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
       p.get.getClass.getSimpleName should be("Blocker")
     }
 
-    it("allows the decorator 'except'") {
+    it("allows the decorator 'except' with a simple rule") {
       val p = configBuilder.parseExceptionRule("except never misses a block")
       p.successful should be(true)
       p.get.getClass.getSimpleName should be("Blocker")
     }
     
-    it("allows 'except' decorator") {
+    it("allows the decorator 'except' with a probability rule") {
       val p = configBuilder.parseExceptionRule("except misses blocks 10% of the time")
       println(p)
       p.successful should be(true)
 
       p.get match {
-        case ruleAndProbability: (Any, Any) => {
-          ruleAndProbability._1.getClass.getSimpleName should be("Blocker")
-          ruleAndProbability._2 should be(0.90)
+        case rule: ProbableRule => {
+          rule.baseRule.getClass.getSimpleName should be("Blocker")
+          rule.probability should be(0.90)
         }
       } 
     }
@@ -120,9 +121,9 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
       val p = configBuilder.parseException("misses wins 15% of the time")
       p.successful should be(true)
       p.get match {
-        case ruleAndProbability: (Any, Any) => {
-          ruleAndProbability._1.getClass.getSimpleName should be("Winner")
-          ruleAndProbability._2 should be(0.85)
+        case rule: ProbableRule => {
+          rule.baseRule.getClass.getSimpleName should be("Winner")
+          rule.probability should be(0.85)
         }
       }
     }
@@ -154,36 +155,36 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
     it("allows specifying the blocking exception") {
       val p = configBuilder.parseProbableException("blocks 90% of the time")
       p.successful should be(true)
-      p.get._1.getClass.getSimpleName should be("Blocker")
-      p.get._2 should be(0.9)
+      p.get.baseRule.getClass.getSimpleName should be("Blocker")
+      p.get.probability should be(0.9)
     }
 
     it("allows specifying the winning exception") {
       val p = configBuilder.parseProbableException("wins 90% of the time")
       p.successful should be(true)
-      p.get._1.getClass.getSimpleName should be("Winner")
-      p.get._2 should be(0.9)
+      p.get.baseRule.getClass.getSimpleName should be("Winner")
+      p.get.probability should be(0.9)
     }
 
     it("should parse the exception for winning") {
       val p = configBuilder.parseProbableException("misses wins 10% of the time")
       p.successful should be(true)
-      p.get._1.getClass.getSimpleName should be("Winner")
-      p.get._2 should be(0.9)
+      p.get.baseRule.getClass.getSimpleName should be("Winner")
+      p.get.probability should be(0.9)
     }
 
     it("should parse the exception for blocking") {
       val p = configBuilder.parseProbableException("misses blocks 10% of the time")
       p.successful should be(true)
-      p.get._1.getClass.getSimpleName should be("Blocker")
-      p.get._2 should be(0.9)
+      p.get.baseRule.getClass.getSimpleName should be("Blocker")
+      p.get.probability should be(0.9)
     }
     
     it("supports alternative syntax for winning") {
       val p = configBuilder.parseProbableException("plays win 90% of the time")
       p.successful should be(true)
-      p.get._1.getClass.getSimpleName should be("Winner")
-      p.get._2 should be(0.9)
+      p.get.baseRule.getClass.getSimpleName should be("Winner")
+      p.get.probability should be(0.9)
     }
   }
 
@@ -200,7 +201,6 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
       p.successful should be(true)
       p.get should be(0.2)
     }
-
   }
   
 }
