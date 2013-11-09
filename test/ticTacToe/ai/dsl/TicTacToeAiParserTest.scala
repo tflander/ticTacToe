@@ -17,6 +17,7 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
     
     def parsePrimaryRule(string: String) = parseAll(primaryRule, string)
     def parseOpeningRule(string: String) = parseAll(openingRule, string)
+    def parseRemovePrimaryRule(string: String) = parseAll(removeFromPrimaryRule, string)
   }
 
   val configBuilder = new ConfigSpike(X)
@@ -112,6 +113,34 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
         }
       } 
     }
+  }
+  
+  describe("removing a primary rule") {
+    
+    it("can remove the corner near opponent rule") {
+      val p = configBuilder.parseRemovePrimaryRule("misses the corner near opponent rule")
+      p.successful should be(true)
+
+      p.get match {
+        case rule: ProbableRule => {
+          rule.baseRule.getClass.getSimpleName should be("CornerNearOpponent")
+          rule.probability should be(0.0)
+        }
+      }      
+    }
+    
+    it("can remove the corner near opponent rule using 'except' decorator") {
+      val p = configBuilder.parseRemovePrimaryRule("except misses the corner near opponent rule")
+      println(p)
+      p.successful should be(true)
+
+      p.get match {
+        case rule: ProbableRule => {
+          rule.baseRule.getClass.getSimpleName should be("CornerNearOpponent")
+          rule.probability should be(0.0)
+        }
+      }      
+    }    
   }
 
   describe("when parse exception") {

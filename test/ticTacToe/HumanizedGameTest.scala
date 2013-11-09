@@ -28,6 +28,39 @@ class HumanizedGameTest extends FunSpec with ShouldMatchers {
 
     new HumanizedAi(icon, None, rulesWithOdds, Nil)
   }
+  
+  /*
+   * 
+   * // TODO:  doesn't know the CornerNearOpponent Rule
+   * // TODO:  doesn't know the Priority Rule
+
+      val aiRules = configBuilder.buildAi("is unbeatable");
+
+      val aiRules = configBuilder.buildAi("opens randomly, otherwise is unbeatable");
+
+      val aiRules = configBuilder.buildAi("opens with center or corner, otherwise is random");
+
+      val aiRules = configBuilder.buildAi("opens with center or corner, otherwise is random, blocks 90% of the time, never misses a win");
+
+      val aiRules = configBuilder.buildAi("opens with center or corner, otherwise is random, blocks 90% of the time, and never misses a win");
+     
+
+    it("supports using whitespace to stack vertically") {
+      val aiRules = configBuilder.buildAi("""
+          opens with center or corner, 
+    		  otherwise is random, 
+    		  plays win 90% of the time, 
+    		  and never misses a block
+          """);
+
+      val aiRules = configBuilder.buildAi("opens randomly, otherwise is unbeatable, except misses blocks 10% of the time");
+     
+
+      val aiRules = configBuilder.buildAi("is unbeatable, except misses wins 10% of the time");
+
+      val aiRules = configBuilder.buildAi("is unbeatable, misses wins 10%");
+ 
+   */
 
   it("shows humanized stats") {
     def play: CellState = {

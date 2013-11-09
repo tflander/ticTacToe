@@ -15,7 +15,7 @@ import ticTacToe.ai.HumanizedAi
 class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
 
   def ruleSet: Parser[HumanizedAi] = opt(openingRule <~ ",") ~ primaryRule ~ opt("," ~> exceptionRules) ^^ {
-    case openingRule ~ primaryRule ~ exceptionRule => tempForNow(openingRule, primaryRule, exceptionRule)
+    case openingRule ~ primaryRule ~ exceptionRule => BuildAi(openingRule, primaryRule, exceptionRule)
   }
 
   def probability: Parser[Double] = floatingPointNumber <~ probabilityDecorator ^^ (_.toDouble / 100)
@@ -23,10 +23,16 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
   
   def probableException: Parser[ProbableRule] = probableRule ~ probability ^^ { case probableRule ~ probability => buildRule(probableRule, probability) }
   def probableRule: Parser[String] = "misses wins" | "misses blocks" | "wins" | "blocks" | "plays win"
+  
+  def removeFromPrimaryRulesDecoratorBefore: Parser[String] = "misses the" | "except misses the"
+  def removeFromPrimaryRulesDecoratorAfter: Parser[String] = "rule"
+  def ruleToRemove = "corner near opponent" | "priority"
+  def removeFromPrimaryRule: Parser[ProbableRule] = removeFromPrimaryRulesDecoratorBefore ~> ruleToRemove <~ removeFromPrimaryRulesDecoratorAfter  ^^ (buildRuleToRemove(_))   
+    
   def simpleException: Parser[AiRule] = simpleExceptionRule ^^ (buildRule(_))
   def simpleExceptionRule: Parser[String] = "never misses a win" | "never misses a block"
 
-  def exception: Parser[AiRule] = simpleException | probableException
+  def exception: Parser[AiRule] = simpleException | probableException | removeFromPrimaryRule
   def exceptionRule: Parser[AiRule] = exceptionDecorator ~> exception
   def exceptionDecorator: Parser[String] = "except" | "and" | ""
   def exceptionRules: Parser[List[AiRule]] = repsep(exceptionRule, ",")
@@ -39,12 +45,18 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
   def openingRuleName: Parser[String] = "randomly" | "with center or corner"
   def openingDecorator: Parser[String] = "opens" | ""
   
-  def tempForNow(openingRule: Option[AiRule], primaryRule: Seq[AiRule], exceptionRule: Option[List[AiRule]]) = {
+  def BuildAi(openingRule: Option[AiRule], primaryRule: Seq[AiRule], exceptionRule: Option[List[AiRule]]) = {
     val exceptions = exceptionRule match {
       case Some(rules: List[AiRule]) => rules
       case None => Nil
     }
     new HumanizedAi(icon, openingRule, primaryRule, exceptions)
+  }
+  
+  def buildRuleToRemove(rule: String) = {
+    rule match {
+      case "corner near opponent" => new ProbableRule(new CornerNearOpponent(icon), 0.0) 
+    }
   }
 
   def buildOpeningRule(rule: String) = {
@@ -61,6 +73,7 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
       case "wins" => new ProbableRule(new Winner(icon), probability)
       case "plays win" => new ProbableRule(new Winner(icon), probability)
       case "blocks" => new ProbableRule(new Blocker(icon), probability)
+      // case "misses the corner near opponent rule" => new ProbableRule(new CornerNearOpponent(icon), 0.0)
     }
   }
 

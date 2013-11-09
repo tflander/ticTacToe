@@ -37,6 +37,17 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       namesOf(ai.primaryRules) should be (unbeatableRules)
       ai.exceptionRules should be(Nil)
     }
+    
+    it("should create an AI that doesn't know the corner near opponent rule, otherwise is unbeatable") {
+      val aiRules = configBuilder.buildAi("is unbeatable, except misses the corner near opponent rule");
+      aiRules.successful should be(true)
+      val ai = aiRules.get
+      ai.icon should be(X)
+      ai.openingRule should be(None)
+      namesOf(ai.primaryRulesExceptionsRemoved) should be (List("Opener", "Winner", "Blocker", "Priority"))
+      namesOf(ai.exceptionRules) should be(Seq("ProbableRule(CornerNearOpponent, 0.0)"))
+    }
+    
 
     it("should create an AI that opens randomly") {
       val aiRules = configBuilder.buildAi("opens randomly, otherwise is unbeatable");
