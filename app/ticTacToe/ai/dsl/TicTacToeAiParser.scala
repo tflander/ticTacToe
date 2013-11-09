@@ -56,6 +56,7 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
   def buildRuleToRemove(rule: String) = {
     rule match {
       case "corner near opponent" => new ProbableRule(new CornerNearOpponent(icon), 0.0) 
+      case "priority" => new ProbableRule(new Priority(icon), 0.0) 
     }
   }
 

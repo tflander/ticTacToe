@@ -140,7 +140,20 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
           rule.probability should be(0.0)
         }
       }      
-    }    
+    }
+    
+    it("can remove the priority rule") {
+      val p = configBuilder.parseRemovePrimaryRule("misses the priority rule")
+      p.successful should be(true)
+
+      p.get match {
+        case rule: ProbableRule => {
+          rule.baseRule.getClass.getSimpleName should be("Priority")
+          rule.probability should be(0.0)
+        }
+      }      
+    }
+    
   }
 
   describe("when parse exception") {
