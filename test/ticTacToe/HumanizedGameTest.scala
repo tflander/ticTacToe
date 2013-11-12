@@ -11,22 +11,12 @@ import ticTacToe.ai.rule.Blocker
 import ticTacToe.ai.rule.CornerNearOpponent
 import ticTacToe.ai.rule.Priority
 import ticTacToe.ai.rule.ProbableRule
+import ticTacToe.ai.dsl.TicTacToeAiParser
 
 class HumanizedGameTest extends FunSpec with ShouldMatchers {
 
   var game: Game = _
-  val runsPerTest = 10000
-
-  def humanizedPlayer(icon: CellState, level: Double) = {
-    val rulesWithOdds = Seq(
-      new ProbableRule(new Opener(icon), level),
-      new ProbableRule(new Winner(icon), level),
-      new ProbableRule(new Blocker(icon), level),
-      new ProbableRule(new CornerNearOpponent(icon), level),
-      new ProbableRule(new Priority(icon), level))
-
-    new HumanizedAi(icon, None, rulesWithOdds, Nil)
-  }
+  val roundsPerMatch = 100
 
   val computerPlayerRules = Seq(
     "is unbeatable, except misses the priority rule",
@@ -38,20 +28,24 @@ class HumanizedGameTest extends FunSpec with ShouldMatchers {
     "opens randomly, otherwise is unbeatable, except misses blocks 10% of the time",
     "is unbeatable, except misses wins 10% of the time")
 
-  it("shows humanized stats") {
-    def play: CellState = {
-      game = new Game
-      val board = game.play(humanizedPlayer(X, 0.1), humanizedPlayer(O, 1.0))
-      return board.winner
-    }
-    val stats = for (i <- 1 to runsPerTest) yield play
-    val wins = stats.count(_ == X)
-    val losses = stats.count(_ == O)
-    val ties = stats.count(_ == Clear)
-
-    println("wins = " + wins + " " + wins * 100 / stats.size + "%")
-    println("losses = " + losses + " " + losses * 100 / stats.size + "%")
-    println("ties = " + ties + " " + ties * 100 / stats.size + "%")
+  ignore("should round robin players") {
+    import RoundRobin._
+	val tournament = buildSchedule(computerPlayerRules)
+    	
+	val rawResults = for (matchUp <- tournament) yield runMatch(roundsPerMatch, matchUp)
+    println(rawResults)
+    println("====")
+    val results = rawResults.flatten.groupBy(_._1)
+    	.mapValues(tupleList => tupleList.map(_._2))
+    	.mapValues(scoreList => scoreList.foldLeft(0)(_ + _))
+    println(results)
+  }
+  
+  ignore("should run a single match") {
+    import RoundRobin._
+    val results = runMatch(roundsPerMatch, ("is random, never misses a block, never misses a win", "opens randomly, otherwise is unbeatable"))
+    println(results)
   }
 
+  
 }
