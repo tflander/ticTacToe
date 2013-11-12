@@ -64,6 +64,13 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
       val rules = p.get.map(_.getClass.getSimpleName)
       rules should be(List("RandomRule"))
     }
+    
+    it("gives error message for invalid primary rule") {
+      val e = intercept[IllegalArgumentException] {
+    	  configBuilder.parsePrimaryRule("is notValid")
+      }
+      e.getMessage should be("Expected Member of Set(unbeatable, random), found: notValid")
+    }
   }
 
   describe("when exception rules") {

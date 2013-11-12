@@ -13,6 +13,13 @@ import ticTacToe.ai.rule.ProbableRule
 import ticTacToe.ai.HumanizedAi
 
 class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
+  // TODO:  These should be dynamically defined
+  def probableRule: Parser[String] = "misses wins" | "misses blocks" | "wins" | "blocks" | "plays win"
+  def ruleToRemove = "corner near opponent" | "priority"
+  def simpleExceptionRule: Parser[String] = "never misses a win" | "never misses a block"
+  def openingRuleName: Parser[String] = "randomly" | "with center or corner"
+
+  // End of TODO for things that need to be dynamically defined
 
   def ruleSet: Parser[HumanizedAi] = opt(openingRule <~ ",") ~ primaryRule ~ opt("," ~> exceptionRules) ^^ {
     case openingRule ~ primaryRule ~ exceptionRule => BuildAi(openingRule, primaryRule, exceptionRule)
@@ -20,31 +27,26 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
 
   def probability: Parser[Double] = floatingPointNumber <~ probabilityDecorator ^^ (_.toDouble / 100)
   def probabilityDecorator: Parser[String] = "% of the time" | "%"
-  
+
   def probableException: Parser[ProbableRule] = probableRule ~ probability ^^ { case probableRule ~ probability => buildRule(probableRule, probability) }
-  def probableRule: Parser[String] = "misses wins" | "misses blocks" | "wins" | "blocks" | "plays win"
-  
+
   def removeFromPrimaryRulesDecoratorBefore: Parser[String] = "misses the" | "except misses the"
   def removeFromPrimaryRulesDecoratorAfter: Parser[String] = "rule"
-  def ruleToRemove = "corner near opponent" | "priority"
-  def removeFromPrimaryRule: Parser[ProbableRule] = removeFromPrimaryRulesDecoratorBefore ~> ruleToRemove <~ removeFromPrimaryRulesDecoratorAfter  ^^ (buildRuleToRemove(_))   
-    
+  def removeFromPrimaryRule: Parser[ProbableRule] = removeFromPrimaryRulesDecoratorBefore ~> ruleToRemove <~ removeFromPrimaryRulesDecoratorAfter ^^ (buildRuleToRemove(_))
+
   def simpleException: Parser[AiRule] = simpleExceptionRule ^^ (buildRule(_))
-  def simpleExceptionRule: Parser[String] = "never misses a win" | "never misses a block"
 
   def exception: Parser[AiRule] = simpleException | probableException | removeFromPrimaryRule
   def exceptionRule: Parser[AiRule] = exceptionDecorator ~> exception
   def exceptionDecorator: Parser[String] = "except" | "and" | ""
   def exceptionRules: Parser[List[AiRule]] = repsep(exceptionRule, ",")
 
-  def primaryRuleName: Parser[String] = "random" | "unbeatable"
-  def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> primaryRuleName ^^ (buildPrimaryRule(_))
+  def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> ident ^^ (buildPrimaryRule(_))
   def primaryRuleDecorator: Parser[String] = "is" | "otherwise is" | ""
 
   def openingRule: Parser[AiRule] = openingDecorator ~> openingRuleName ^^ (buildOpeningRule(_))
-  def openingRuleName: Parser[String] = "randomly" | "with center or corner"
   def openingDecorator: Parser[String] = "opens" | ""
-  
+
   def BuildAi(openingRule: Option[AiRule], primaryRule: Seq[AiRule], exceptionRule: Option[List[AiRule]]) = {
     val exceptions = exceptionRule match {
       case Some(rules: List[AiRule]) => rules
@@ -52,11 +54,11 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
     }
     new HumanizedAi(icon, openingRule, primaryRule, exceptions)
   }
-  
+
   def buildRuleToRemove(rule: String) = {
     rule match {
-      case "corner near opponent" => new ProbableRule(new CornerNearOpponent(icon), 0.0) 
-      case "priority" => new ProbableRule(new Priority(icon), 0.0) 
+      case "corner near opponent" => new ProbableRule(new CornerNearOpponent(icon), 0.0)
+      case "priority" => new ProbableRule(new Priority(icon), 0.0)
     }
   }
 
@@ -74,24 +76,25 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
       case "wins" => new ProbableRule(new Winner(icon), probability)
       case "plays win" => new ProbableRule(new Winner(icon), probability)
       case "blocks" => new ProbableRule(new Blocker(icon), probability)
-      // case "misses the corner near opponent rule" => new ProbableRule(new CornerNearOpponent(icon), 0.0)
     }
   }
 
+  val primaryRules: Map[String, Seq[AiRule]] = Map(
+    "unbeatable" ->
+      Seq(
+        new Opener(icon),
+        new Winner(icon),
+        new Blocker(icon),
+        new CornerNearOpponent(icon),
+        new Priority(icon)),
+    "random" ->
+      Seq(new RandomRule(icon)))
+
   def buildPrimaryRule(rule: String) = {
-    rule match {
-      case "unbeatable" => {
-        Seq(
-          new Opener(icon),
-          new Winner(icon),
-          new Blocker(icon),
-          new CornerNearOpponent(icon),
-          new Priority(icon))
-      }
-      case "random" => {
-        Seq(new RandomRule(icon))
-      }
-    }
+    primaryRules.get(rule) match {
+      case Some(ruleSeq) => ruleSeq
+      case None => throw new IllegalArgumentException("Expected Member of " + primaryRules.keys + ", found: " + rule)
+    }    
   }
 
   def buildRule(rule: String): AiRule = {
