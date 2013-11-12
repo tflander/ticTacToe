@@ -39,7 +39,7 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
     }
     
     it("should create an AI that doesn't know the corner near opponent rule, otherwise is unbeatable") {
-      val aiRules = configBuilder.buildAi("is unbeatable, except misses the corner near opponent rule");
+      val aiRules = configBuilder.buildAi("is unbeatable, except misses the cornerNearOpponent rule");
       aiRules.successful should be(true)
       val ai = aiRules.get
       ai.icon should be(X)

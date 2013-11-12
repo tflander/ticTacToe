@@ -15,10 +15,8 @@ import ticTacToe.ai.HumanizedAi
 class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
   // TODO:  These should be dynamically defined
   def probableRule: Parser[String] = "misses wins" | "misses blocks" | "wins" | "blocks" | "plays win"
-  def ruleToRemove = "corner near opponent" | "priority"
   def simpleExceptionRule: Parser[String] = "never misses a win" | "never misses a block"
   def openingRuleName: Parser[String] = "randomly" | "with center or corner"
-
   // End of TODO for things that need to be dynamically defined
 
   def ruleSet: Parser[HumanizedAi] = opt(openingRule <~ ",") ~ primaryRule ~ opt("," ~> exceptionRules) ^^ {
@@ -32,7 +30,7 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
 
   def removeFromPrimaryRulesDecoratorBefore: Parser[String] = "misses the" | "except misses the"
   def removeFromPrimaryRulesDecoratorAfter: Parser[String] = "rule"
-  def removeFromPrimaryRule: Parser[ProbableRule] = removeFromPrimaryRulesDecoratorBefore ~> ruleToRemove <~ removeFromPrimaryRulesDecoratorAfter ^^ (buildRuleToRemove(_))
+  def removeFromPrimaryRule: Parser[ProbableRule] = removeFromPrimaryRulesDecoratorBefore ~> ident <~ removeFromPrimaryRulesDecoratorAfter ^^ (buildRuleToRemove(_))
 
   def simpleException: Parser[AiRule] = simpleExceptionRule ^^ (buildRule(_))
 
@@ -54,11 +52,16 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
     }
     new HumanizedAi(icon, openingRule, primaryRule, exceptions)
   }
+  
+  val rulesToRemove = Map(
+	"cornerNearOpponent" -> new ProbableRule(new CornerNearOpponent(icon), 0.0),
+	"priority" -> new ProbableRule(new Priority(icon), 0.0)
+  )
 
   def buildRuleToRemove(rule: String) = {
-    rule match {
-      case "corner near opponent" => new ProbableRule(new CornerNearOpponent(icon), 0.0)
-      case "priority" => new ProbableRule(new Priority(icon), 0.0)
+    rulesToRemove.get(rule) match {
+      case Some(ruleToRemove) => ruleToRemove
+      case _ => throw new IllegalArgumentException("Expected Member of " + rulesToRemove.keys + ", found: " + rule)
     }
   }
 

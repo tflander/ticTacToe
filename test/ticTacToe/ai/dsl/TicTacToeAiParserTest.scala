@@ -125,7 +125,7 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
   describe("removing a primary rule") {
     
     it("can remove the corner near opponent rule") {
-      val p = configBuilder.parseRemovePrimaryRule("misses the corner near opponent rule")
+      val p = configBuilder.parseRemovePrimaryRule("misses the cornerNearOpponent rule")
       p.successful should be(true)
 
       p.get match {
@@ -137,7 +137,7 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
     }
     
     it("can remove the corner near opponent rule using 'except' decorator") {
-      val p = configBuilder.parseRemovePrimaryRule("except misses the corner near opponent rule")
+      val p = configBuilder.parseRemovePrimaryRule("except misses the cornerNearOpponent rule")
       println(p)
       p.successful should be(true)
 
@@ -161,6 +161,12 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
       }      
     }
     
+    it("gives error message for invalid rule to remove") {
+      val e = intercept[IllegalArgumentException] {
+        configBuilder.parseRemovePrimaryRule("misses the invalidRule rule")
+      }
+      e.getMessage should include("Expected Member of Set(cornerNearOpponent, priority), found: invalidRule")
+    }
   }
 
   describe("when parse exception") {
