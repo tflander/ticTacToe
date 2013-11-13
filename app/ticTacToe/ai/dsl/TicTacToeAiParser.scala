@@ -12,7 +12,7 @@ import ticTacToe.ai.rule.CenterOrCorner
 import ticTacToe.ai.rule.ProbableRule
 import ticTacToe.ai.HumanizedAi
 
-trait exceptionRuleParser extends JavaTokenParsers {
+trait ExceptionRuleParser extends JavaTokenParsers {
   
   // TODO:  These should be dynamically defined
   def probableRule: Parser[String] = "misses wins" | "misses blocks" | "wins" | "blocks" | "plays win"
@@ -65,7 +65,7 @@ trait exceptionRuleParser extends JavaTokenParsers {
   }  
 }
 
-class TicTacToeAiParser(icon: CellState) extends openingRuleParser with primaryRuleParser with exceptionRuleParser{
+class TicTacToeAiParser(icon: CellState) extends OpeningRuleParser with PrimaryRuleParser with ExceptionRuleParser{
 
   def iconFromClass = icon
 
@@ -83,7 +83,7 @@ class TicTacToeAiParser(icon: CellState) extends openingRuleParser with primaryR
 
 }
 
-trait openingRuleParser extends JavaTokenParsers {
+trait OpeningRuleParser extends JavaTokenParsers {
   def iconFromClass: CellState
 
   def openingRule: Parser[AiRule] = openingDecorator ~ opt("with") ~> ident ^^ (buildOpeningRule(_))
@@ -102,7 +102,7 @@ trait openingRuleParser extends JavaTokenParsers {
 
 }
 
-trait primaryRuleParser extends JavaTokenParsers {
+trait PrimaryRuleParser extends JavaTokenParsers {
   def iconFromClass: CellState
   
   def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> ident ^^ (buildPrimaryRule(_))

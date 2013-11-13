@@ -16,34 +16,11 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
     def parseExceptionRules(string: String) = parseAll(exceptionRules, string)
     
     def parsePrimaryRule(string: String) = parseAll(primaryRule, string)
-    def parseOpeningRule(string: String) = parseAll(openingRule, string)
     def parseRemovePrimaryRule(string: String) = parseAll(removeFromPrimaryRule, string)
   }
 
   val configBuilder = new ConfigSpike(X)
 
-  describe("when openingRule") {
-
-    it("can open randomly") {
-      val p = configBuilder.parseOpeningRule("opens randomly")
-      p.successful should be(true)
-      p.get.getClass.getSimpleName should be("RandomRule")
-    }
-
-    it("can open strong using optional 'with' decorator") {
-      val p = configBuilder.parseOpeningRule("opens with centerOrCorner")
-      p.successful should be(true)
-      p.get.getClass.getSimpleName should be("CenterOrCorner")
-    }
-    
-    it("gives error for invalid opening rule") {
-      val e = intercept[IllegalArgumentException] {
-    	  configBuilder.parseOpeningRule("opens usingInvalidRule")        
-      }
-      e.getMessage should include("Expected Member of Set(randomly, centerOrCorner), found: usingInvalidRule")
-    }
-  }
-  
   describe("when primary rule") {
 
     it("creates an unbeatable AI") {
