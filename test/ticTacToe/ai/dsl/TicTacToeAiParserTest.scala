@@ -148,6 +148,13 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
       p.successful should be(true)
       p.get.getClass.getSimpleName should be("Blocker")
     }
+    
+    it("should fail an invalid rule") {
+      val e = intercept[IllegalArgumentException] {
+    	  configBuilder.parseSimpleException("never misses a meal")
+      }
+      e.getMessage should include("Expected Member of Set(win, block), found: meal")
+    }
 
   }
 

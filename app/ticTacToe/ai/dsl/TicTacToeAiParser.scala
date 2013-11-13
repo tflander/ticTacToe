@@ -13,7 +13,7 @@ import ticTacToe.ai.rule.ProbableRule
 import ticTacToe.ai.HumanizedAi
 
 trait ExceptionRuleParser extends JavaTokenParsers {
-  
+
   def iconFromClass: CellState
   def probability: Parser[Double] = floatingPointNumber <~ probabilityDecorator ^^ (_.toDouble / 100)
   def probabilityDecorator: Parser[String] = "% of the time" | "%"
@@ -30,7 +30,7 @@ trait ExceptionRuleParser extends JavaTokenParsers {
   def exceptionRule: Parser[AiRule] = exceptionDecorator ~> exception
   def exceptionDecorator: Parser[String] = "except" | "and" | ""
   def exceptionRules: Parser[List[AiRule]] = repsep(exceptionRule, ",")
-  
+
   val rulesToRemove = Map(
     "cornerNearOpponent" -> new ProbableRule(new CornerNearOpponent(iconFromClass), 0.0),
     "priority" -> new ProbableRule(new Priority(iconFromClass), 0.0))
@@ -42,7 +42,6 @@ trait ExceptionRuleParser extends JavaTokenParsers {
     }
   }
 
-  // TODO: add validation
   def buildRule(qualifierOrNot: Option[String], probableRule: String, probability: Double) = {
     val triggerProbability = qualifierOrNot match {
       case Some(qualifier) => qualifier match {
@@ -51,7 +50,7 @@ trait ExceptionRuleParser extends JavaTokenParsers {
       }
       case None => probability
     }
-    
+
     probableRule match {
       case "wins" => new ProbableRule(new Winner(iconFromClass), triggerProbability)
       case "win" => new ProbableRule(new Winner(iconFromClass), triggerProbability)
@@ -59,16 +58,19 @@ trait ExceptionRuleParser extends JavaTokenParsers {
     }
   }
 
-  // TODO:  add validation
+  val simpleRules = Map(
+    "win" -> new Winner(iconFromClass),
+    "block" -> new Blocker(iconFromClass))
+
   def buildRule(rule: String): AiRule = {
-    rule match {
-      case "win" => new Winner(iconFromClass)
-      case "block" => new Blocker(iconFromClass)
+    simpleRules.get(rule) match {
+      case Some(simpleRule) => simpleRule
+      case _ => throw new IllegalArgumentException("Expected Member of " + simpleRules.keys + ", found: " + rule)
     }
-  }  
+  }
 }
 
-class TicTacToeAiParser(icon: CellState) extends OpeningRuleParser with PrimaryRuleParser with ExceptionRuleParser{
+class TicTacToeAiParser(icon: CellState) extends OpeningRuleParser with PrimaryRuleParser with ExceptionRuleParser {
 
   def iconFromClass = icon
 
@@ -107,7 +109,7 @@ trait OpeningRuleParser extends JavaTokenParsers {
 
 trait PrimaryRuleParser extends JavaTokenParsers {
   def iconFromClass: CellState
-  
+
   def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> ident ^^ (buildPrimaryRule(_))
   def primaryRuleDecorator: Parser[String] = "is" | "otherwise is" | ""
 
@@ -128,6 +130,6 @@ trait PrimaryRuleParser extends JavaTokenParsers {
       case None => throw new IllegalArgumentException("Expected Member of " + primaryRules.keys + ", found: " + rule)
     }
   }
-  
+
 }
 
