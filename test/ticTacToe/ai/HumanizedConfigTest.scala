@@ -69,7 +69,7 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
     }
 
     it("should create an AI that opens with center or corner, then moves randomly") {
-      val aiRules = configBuilder.buildAi("opens with center or corner, otherwise is random");
+      val aiRules = configBuilder.buildAi("opens with centerOrCorner, otherwise is random");
       aiRules.successful should be(true)
       val ai = aiRules.get
       ai.icon should be(X)
@@ -79,7 +79,7 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
     }
 
     it("should create an AI that opens with center or corner, then moves randomly, misses blocks 10% of the time") {
-      val aiRules = configBuilder.buildAi("opens with center or corner, otherwise is random, blocks 90% of the time, never misses a win");
+      val aiRules = configBuilder.buildAi("opens with centerOrCorner, otherwise is random, blocks 90% of the time, never misses a win");
       aiRules.successful should be(true)
       val ai = aiRules.get
       ai.icon should be(X)
@@ -89,7 +89,7 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
     }
 
     it("same as above, but can use 'and' to chain exception rules") {
-      val aiRules = configBuilder.buildAi("opens with center or corner, otherwise is random, blocks 90% of the time, and never misses a win");
+      val aiRules = configBuilder.buildAi("opens with centerOrCorner, otherwise is random, blocks 90% of the time, and never misses a win");
       aiRules.successful should be(true)
       val ai = aiRules.get
       ai.icon should be(X)
@@ -100,7 +100,7 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
 
     it("supports using whitespace to stack vertically") {
       val aiRules = configBuilder.buildAi("""
-          opens with center or corner, 
+          opens with centerOrCorner, 
     		  otherwise is random, 
     		  plays win 90% of the time, 
     		  and never misses a block

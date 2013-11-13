@@ -25,23 +25,25 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
   describe("when openingRule") {
 
     it("can open randomly") {
-      val p = configBuilder.parseOpeningRule("randomly")
+      val p = configBuilder.parseOpeningRule("opens randomly")
       p.successful should be(true)
       p.get.getClass.getSimpleName should be("RandomRule")
     }
 
-    it("can open strong") {
-      val p = configBuilder.parseOpeningRule("with center or corner")
+    it("can open strong using optional 'with' decorator") {
+      val p = configBuilder.parseOpeningRule("opens with centerOrCorner")
       p.successful should be(true)
       p.get.getClass.getSimpleName should be("CenterOrCorner")
     }
-
-    it("supports decorator 'opens'") {
-      val p = configBuilder.parseOpeningRule("opens with center or corner")
-      p.successful should be(true)
-      p.get.getClass.getSimpleName should be("CenterOrCorner")
+    
+    it("gives error for invalid opening rule") {
+      val e = intercept[IllegalArgumentException] {
+    	  configBuilder.parseOpeningRule("opens usingInvalidRule")        
+      }
+      e.getMessage should include("Expected Member of Set(randomly, centerOrCorner), found: usingInvalidRule")
     }
   }
+  
   describe("when primary rule") {
 
     it("creates an unbeatable AI") {

@@ -16,7 +16,7 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
   // TODO:  These should be dynamically defined
   def probableRule: Parser[String] = "misses wins" | "misses blocks" | "wins" | "blocks" | "plays win"
   def simpleExceptionRule: Parser[String] = "never misses a win" | "never misses a block"
-  def openingRuleName: Parser[String] = "randomly" | "with center or corner"
+//  def openingRuleName: Parser[String] = "randomly" | "with center or corner"
   // End of TODO for things that need to be dynamically defined
 
   def ruleSet: Parser[HumanizedAi] = opt(openingRule <~ ",") ~ primaryRule ~ opt("," ~> exceptionRules) ^^ {
@@ -42,8 +42,8 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
   def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> ident ^^ (buildPrimaryRule(_))
   def primaryRuleDecorator: Parser[String] = "is" | "otherwise is" | ""
 
-  def openingRule: Parser[AiRule] = openingDecorator ~> openingRuleName ^^ (buildOpeningRule(_))
-  def openingDecorator: Parser[String] = "opens" | ""
+  def openingRule: Parser[AiRule] = openingDecorator ~ opt("with") ~> ident ^^ (buildOpeningRule(_))
+  def openingDecorator: Parser[String] = "opens" 
 
   def BuildAi(openingRule: Option[AiRule], primaryRule: Seq[AiRule], exceptionRule: Option[List[AiRule]]) = {
     val exceptions = exceptionRule match {
@@ -65,10 +65,15 @@ class TicTacToeAiParser(icon: CellState) extends JavaTokenParsers {
     }
   }
 
+  val openingRules = Map(
+      "randomly" -> new RandomRule(icon),
+      "centerOrCorner" -> new CenterOrCorner(icon)      
+  )
+  
   def buildOpeningRule(rule: String) = {
-    rule match {
-      case "randomly" => new RandomRule(icon)
-      case "with center or corner" => new CenterOrCorner(icon)
+    openingRules.get(rule) match {
+      case Some(openingRule) => openingRule
+      case _ => throw new IllegalArgumentException("Expected Member of " + openingRules.keys + ", found: " + rule)
     }
   }
 
