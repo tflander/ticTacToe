@@ -14,10 +14,6 @@ import ticTacToe.ai.HumanizedAi
 
 trait ExceptionRuleParser extends JavaTokenParsers {
   
-  // TODO:  These should be dynamically defined
-  def simpleExceptionRule: Parser[String] = "never misses a win" | "never misses a block"
-  // End of TODO for things that need to be dynamically defined
-  
   def iconFromClass: CellState
   def probability: Parser[Double] = floatingPointNumber <~ probabilityDecorator ^^ (_.toDouble / 100)
   def probabilityDecorator: Parser[String] = "% of the time" | "%"
@@ -28,7 +24,7 @@ trait ExceptionRuleParser extends JavaTokenParsers {
   def removeFromPrimaryRulesDecoratorAfter: Parser[String] = "rule"
   def removeFromPrimaryRule: Parser[ProbableRule] = removeFromPrimaryRulesDecoratorBefore ~> ident <~ removeFromPrimaryRulesDecoratorAfter ^^ (buildRuleToRemove(_))
 
-  def simpleException: Parser[AiRule] = simpleExceptionRule ^^ (buildRule(_))
+  def simpleException: Parser[AiRule] = "never misses a " ~> ident ^^ (buildRule(_))
 
   def exception: Parser[AiRule] = simpleException | probableException | removeFromPrimaryRule
   def exceptionRule: Parser[AiRule] = exceptionDecorator ~> exception
@@ -63,10 +59,11 @@ trait ExceptionRuleParser extends JavaTokenParsers {
     }
   }
 
+  // TODO:  add validation
   def buildRule(rule: String): AiRule = {
     rule match {
-      case "never misses a win" => new Winner(iconFromClass)
-      case "never misses a block" => new Blocker(iconFromClass)
+      case "win" => new Winner(iconFromClass)
+      case "block" => new Blocker(iconFromClass)
     }
   }  
 }
