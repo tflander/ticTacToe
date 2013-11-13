@@ -15,7 +15,6 @@ import ticTacToe.ai.HumanizedAi
 trait ExceptionRuleParser extends JavaTokenParsers {
   
   // TODO:  These should be dynamically defined
-  def probableRule: Parser[String] = "misses wins" | "misses blocks" | "wins" | "blocks" | "plays win"
   def simpleExceptionRule: Parser[String] = "never misses a win" | "never misses a block"
   // End of TODO for things that need to be dynamically defined
   
@@ -23,7 +22,7 @@ trait ExceptionRuleParser extends JavaTokenParsers {
   def probability: Parser[Double] = floatingPointNumber <~ probabilityDecorator ^^ (_.toDouble / 100)
   def probabilityDecorator: Parser[String] = "% of the time" | "%"
 
-  def probableException: Parser[ProbableRule] = probableRule ~ probability ^^ { case probableRule ~ probability => buildRule(probableRule, probability) }
+  def probableException: Parser[ProbableRule] = opt("misses" | "plays") ~ ident ~ probability ^^ { case qualifier ~ probableRule ~ probability => buildRule(qualifier, probableRule, probability) }
 
   def removeFromPrimaryRulesDecoratorBefore: Parser[String] = "misses the" | "except misses the"
   def removeFromPrimaryRulesDecoratorAfter: Parser[String] = "rule"
@@ -47,13 +46,20 @@ trait ExceptionRuleParser extends JavaTokenParsers {
     }
   }
 
-  def buildRule(probableRule: String, probability: Double) = {
+  // TODO: add validation
+  def buildRule(qualifierOrNot: Option[String], probableRule: String, probability: Double) = {
+    val triggerProbability = qualifierOrNot match {
+      case Some(qualifier) => qualifier match {
+        case "misses" => 1 - probability
+        case _ => probability
+      }
+      case None => probability
+    }
+    
     probableRule match {
-      case "misses wins" => new ProbableRule(new Winner(iconFromClass), 1 - probability)
-      case "misses blocks" => new ProbableRule(new Blocker(iconFromClass), 1 - probability)
-      case "wins" => new ProbableRule(new Winner(iconFromClass), probability)
-      case "plays win" => new ProbableRule(new Winner(iconFromClass), probability)
-      case "blocks" => new ProbableRule(new Blocker(iconFromClass), probability)
+      case "wins" => new ProbableRule(new Winner(iconFromClass), triggerProbability)
+      case "win" => new ProbableRule(new Winner(iconFromClass), triggerProbability)
+      case "blocks" => new ProbableRule(new Blocker(iconFromClass), triggerProbability)
     }
   }
 
