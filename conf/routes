@@ -3,6 +3,7 @@
 # ~~~~
 
 # Home page
+GET     /aibuilder					controllers.AiBuilder.index
 GET     /                           controllers.Application.index
 GET     /:setup                     controllers.Application.move(setup: String)
 
