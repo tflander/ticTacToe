@@ -15,42 +15,10 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
     def parseExceptionRule(string: String) = parseAll(exceptionRule, string)
     def parseExceptionRules(string: String) = parseAll(exceptionRules, string)
     
-    def parsePrimaryRule(string: String) = parseAll(primaryRule, string)
     def parseRemovePrimaryRule(string: String) = parseAll(removeFromPrimaryRule, string)
   }
 
   val configBuilder = new ConfigSpike(X)
-
-  describe("when primary rule") {
-
-    it("creates an unbeatable AI") {
-      val p = configBuilder.parsePrimaryRule("unbeatable")
-      p.successful should be(true)
-      val rules = p.get.map(_.getClass.getSimpleName)
-      rules should be(List("Opener", "Winner", "Blocker", "CornerNearOpponent", "Priority"))
-    }
-
-    it("creates a random AI") {
-      val p = configBuilder.parsePrimaryRule("random")
-      p.successful should be(true)
-      val rules = p.get.map(_.getClass.getSimpleName)
-      rules should be(List("RandomRule"))
-    }
-
-    it("supports decoration with 'is'") {
-      val p = configBuilder.parsePrimaryRule("is random")
-      p.successful should be(true)
-      val rules = p.get.map(_.getClass.getSimpleName)
-      rules should be(List("RandomRule"))
-    }
-    
-    it("gives error message for invalid primary rule") {
-      val e = intercept[IllegalArgumentException] {
-    	  configBuilder.parsePrimaryRule("is notValid")
-      }
-      e.getMessage should be("Expected Member of Set(unbeatable, random), found: notValid")
-    }
-  }
 
   describe("when exception rules") {
     it("parses a single rule") {
