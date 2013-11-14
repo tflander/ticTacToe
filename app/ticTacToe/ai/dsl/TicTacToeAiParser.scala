@@ -11,6 +11,7 @@ import ticTacToe.ai.rule.RandomRule
 import ticTacToe.ai.rule.CenterOrCorner
 import ticTacToe.ai.rule.ProbableRule
 import ticTacToe.ai.HumanizedAi
+import scala.annotation.tailrec
 
 trait ExceptionRuleParser extends JavaTokenParsers {
 
@@ -38,7 +39,7 @@ trait ExceptionRuleParser extends JavaTokenParsers {
   def buildRuleToRemove(rule: String) = {
     rulesToRemove.get(rule) match {
       case Some(ruleToRemove) => ruleToRemove
-      case _ => throw new IllegalArgumentException("Expected Member of " + rulesToRemove.keys + ", found: " + rule)
+      case _ => throw new IllegalArgumentException("Member of " + rulesToRemove.keys)
     }
   }
 
@@ -91,14 +92,33 @@ class TicTacToeAiParser(icon: CellState) extends OpeningRuleParser with PrimaryR
 trait OpeningRuleParser extends JavaTokenParsers {
   def iconFromClass: CellState
 
-  def openingRule: Parser[AiRule] = openingDecorator ~ opt("with") ~> ident ^^ (buildOpeningRule(_))
+  def openingRule: Parser[AiRule] = openingDecorator ~ opt("with") ~> openingRuleNames ^^ (buildOpeningRule(_))
+  
+  // TODO:  can we generate the valid list based on openingRules keys?
+  val openingRules = Map(
+		  "randomly" -> new RandomRule(iconFromClass),
+		  "centerOrCorner" -> new CenterOrCorner(iconFromClass))
+
+  println(openingRules.keys.head)
+  println(openingRules.keys.tail)
+  
+  @tailrec final def buildStringParser(sParser: Option[Parser[String]], rules: Iterable[String]): Parser[String] = {
+    val rule = rules.head
+    val updatedParser: Parser[String] = sParser match {
+      case Some(parser) => parser.append(rule)
+      case None => rule
+    }
+    if(rules.tail.isEmpty) return updatedParser
+    return buildStringParser(Some(updatedParser), rules.tail)
+  }
+  
+  val validRules: Parser[String] = buildStringParser(None, openingRules.keys)
+  
+  def openingRuleNames: Parser[String] =  validRules | ("Expected Member of " + openingRules.keys)
   def openingDecorator: Parser[String] = "opens"
 
-  val openingRules = Map(
-    "randomly" -> new RandomRule(iconFromClass),
-    "centerOrCorner" -> new CenterOrCorner(iconFromClass))
-
-  def buildOpeningRule(rule: String) = {
+  def buildOpeningRule(rulex: Any) = {
+    val rule = rulex.toString
     openingRules.get(rule) match {
       case Some(openingRule) => openingRule
       case _ => throw new IllegalArgumentException("Expected Member of " + openingRules.keys + ", found: " + rule)

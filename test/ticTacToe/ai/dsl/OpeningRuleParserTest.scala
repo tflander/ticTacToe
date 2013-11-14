@@ -12,23 +12,22 @@ class OpeningRuleParserTest extends FunSpec with ShouldMatchers {
 
   val configBuilder = new ConfigSpike(X)
 
-    it("can open randomly") {
-      val p = configBuilder.parseOpeningRule("opens randomly")
-      p.successful should be(true)
-      p.get.getClass.getSimpleName should be("RandomRule")
-    }
+  it("can open randomly") {
+    val p = configBuilder.parseOpeningRule("opens randomly")
+    p.successful should be(true)
+    p.get.getClass.getSimpleName should be("RandomRule")
+  }
 
-    it("can open strong using optional 'with' decorator") {
-      val p = configBuilder.parseOpeningRule("opens with centerOrCorner")
-      p.successful should be(true)
-      p.get.getClass.getSimpleName should be("CenterOrCorner")
-    }
-    
-    it("gives error for invalid opening rule") {
-      val e = intercept[IllegalArgumentException] {
-    	  configBuilder.parseOpeningRule("opens usingInvalidRule")        
-      }
-      e.getMessage should include("Expected Member of Set(randomly, centerOrCorner), found: usingInvalidRule")
-    }
-  
+  it("can open strong using optional 'with' decorator") {
+    val p = configBuilder.parseOpeningRule("opens with centerOrCorner")
+    p.successful should be(true)
+    p.get.getClass.getSimpleName should be("CenterOrCorner")
+  }
+
+  it("gives error for invalid opening rule") {
+    val p = configBuilder.parseOpeningRule("opens usingInvalidRule")
+    p.successful should be(false)
+    p.toString should include("Member of Set(randomly, centerOrCorner)' expected")
+  }
+
 }
