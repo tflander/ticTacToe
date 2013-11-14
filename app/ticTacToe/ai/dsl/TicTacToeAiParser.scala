@@ -13,9 +13,26 @@ import ticTacToe.ai.rule.ProbableRule
 import ticTacToe.ai.HumanizedAi
 import scala.annotation.tailrec
 
-trait ExceptionRuleParser extends JavaTokenParsers {
+class TicTacToeAiParser(icon: CellState) extends OpeningRuleParser with PrimaryRuleParser with ExceptionRuleParser {
 
-  def iconFromClass: CellState
+  def iconFromClass = icon
+
+  def ruleSet: Parser[HumanizedAi] = opt(openingRule <~ ",") ~ primaryRule ~ opt("," ~> exceptionRules) ^^ {
+    case openingRule ~ primaryRule ~ exceptionRule => BuildAi(openingRule, primaryRule, exceptionRule)
+  }
+
+  def BuildAi(openingRule: Option[AiRule], primaryRule: Seq[AiRule], exceptionRule: Option[List[AiRule]]) = {
+    val exceptions = exceptionRule match {
+      case Some(rules: List[AiRule]) => rules
+      case None => Nil
+    }
+    new HumanizedAi(icon, openingRule, primaryRule, exceptions)
+  }
+}
+
+
+trait ExceptionRuleParser extends BaseRuleParser {
+
   def probability: Parser[Double] = floatingPointNumber <~ probabilityDecorator ^^ (_.toDouble / 100)
   def probabilityDecorator: Parser[String] = "% of the time" | "%"
 
@@ -23,9 +40,9 @@ trait ExceptionRuleParser extends JavaTokenParsers {
 
   def removeFromPrimaryRulesDecoratorBefore: Parser[String] = "misses the" | "except misses the"
   def removeFromPrimaryRulesDecoratorAfter: Parser[String] = "rule"
-  def removeFromPrimaryRule: Parser[ProbableRule] = removeFromPrimaryRulesDecoratorBefore ~> ident <~ removeFromPrimaryRulesDecoratorAfter ^^ (buildRuleToRemove(_))
+  def removeFromPrimaryRule: Parser[ProbableRule] = removeFromPrimaryRulesDecoratorBefore ~> ident <~ removeFromPrimaryRulesDecoratorAfter ^^ (getRule(_, rulesToRemove))
 
-  def simpleException: Parser[AiRule] = "never misses a " ~> ident ^^ (buildRule(_))
+  def simpleException: Parser[AiRule] = "never misses a " ~> ident ^^ (getRule(_, simpleRules))
 
   def exception: Parser[AiRule] = simpleException | probableException | removeFromPrimaryRule
   def exceptionRule: Parser[AiRule] = exceptionDecorator ~> exception
@@ -35,13 +52,6 @@ trait ExceptionRuleParser extends JavaTokenParsers {
   val rulesToRemove = Map(
     "cornerNearOpponent" -> new ProbableRule(new CornerNearOpponent(iconFromClass), 0.0),
     "priority" -> new ProbableRule(new Priority(iconFromClass), 0.0))
-
-  def buildRuleToRemove(rule: String) = {
-    rulesToRemove.get(rule) match {
-      case Some(ruleToRemove) => ruleToRemove
-      case _ => throw new IllegalArgumentException("Member of " + rulesToRemove.keys)
-    }
-  }
 
   def buildRule(qualifierOrNot: Option[String], probableRule: String, probability: Double) = {
     val triggerProbability = qualifierOrNot match {
@@ -62,75 +72,21 @@ trait ExceptionRuleParser extends JavaTokenParsers {
   val simpleRules = Map(
     "win" -> new Winner(iconFromClass),
     "block" -> new Blocker(iconFromClass))
-
-  def buildRule(rule: String): AiRule = {
-    simpleRules.get(rule) match {
-      case Some(simpleRule) => simpleRule
-      case _ => throw new IllegalArgumentException("Expected Member of " + simpleRules.keys + ", found: " + rule)
-    }
-  }
 }
 
-class TicTacToeAiParser(icon: CellState) extends OpeningRuleParser with PrimaryRuleParser with ExceptionRuleParser {
+trait OpeningRuleParser extends BaseRuleParser {
 
-  def iconFromClass = icon
-
-  def ruleSet: Parser[HumanizedAi] = opt(openingRule <~ ",") ~ primaryRule ~ opt("," ~> exceptionRules) ^^ {
-    case openingRule ~ primaryRule ~ exceptionRule => BuildAi(openingRule, primaryRule, exceptionRule)
-  }
-
-  def BuildAi(openingRule: Option[AiRule], primaryRule: Seq[AiRule], exceptionRule: Option[List[AiRule]]) = {
-    val exceptions = exceptionRule match {
-      case Some(rules: List[AiRule]) => rules
-      case None => Nil
-    }
-    new HumanizedAi(icon, openingRule, primaryRule, exceptions)
-  }
-
-}
-
-trait OpeningRuleParser extends JavaTokenParsers {
-  def iconFromClass: CellState
-
-  def openingRule: Parser[AiRule] = openingDecorator ~ opt("with") ~> openingRuleNames ^^ (buildOpeningRule(_))
-  
-  // TODO:  can we generate the valid list based on openingRules keys?
   val openingRules = Map(
 		  "randomly" -> new RandomRule(iconFromClass),
 		  "centerOrCorner" -> new CenterOrCorner(iconFromClass))
-
-  println(openingRules.keys.head)
-  println(openingRules.keys.tail)
-  
-  @tailrec final def buildStringParser(sParser: Option[Parser[String]], rules: Iterable[String]): Parser[String] = {
-    val rule = rules.head
-    val updatedParser: Parser[String] = sParser match {
-      case Some(parser) => parser.append(rule)
-      case None => rule
-    }
-    if(rules.tail.isEmpty) return updatedParser
-    return buildStringParser(Some(updatedParser), rules.tail)
-  }
-  
-  val validRules: Parser[String] = buildStringParser(None, openingRules.keys)
-  
-  def openingRuleNames: Parser[String] =  validRules | ("Expected Member of " + openingRules.keys)
-  def openingDecorator: Parser[String] = "opens"
-
-  def buildOpeningRule(rulex: Any) = {
-    val rule = rulex.toString
-    openingRules.get(rule) match {
-      case Some(openingRule) => openingRule
-      case _ => throw new IllegalArgumentException("Expected Member of " + openingRules.keys + ", found: " + rule)
-    }
-  }
-
+		  
+  def openingRule: Parser[AiRule] = "opens" ~ opt("with") ~> openingRuleNames ^^ (getRule(_, openingRules))
+  def openingRuleNames: Parser[String] =  buildStringParser(None, openingRules.keys) | ("Expected Member of " + openingRules.keys)
 }
 
-trait PrimaryRuleParser extends JavaTokenParsers {
-  def iconFromClass: CellState
+trait PrimaryRuleParser extends BaseRuleParser {
 
-  def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> ident ^^ (buildPrimaryRule(_))
+  def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> ident ^^ (getRule(_, primaryRules))
   def primaryRuleDecorator: Parser[String] = "is" | "otherwise is" | ""
 
   val primaryRules: Map[String, Seq[AiRule]] = Map(
@@ -143,13 +99,47 @@ trait PrimaryRuleParser extends JavaTokenParsers {
         new Priority(iconFromClass)),
     "random" ->
       Seq(new RandomRule(iconFromClass)))
-
-  def buildPrimaryRule(rule: String) = {
-    primaryRules.get(rule) match {
-      case Some(ruleSeq) => ruleSeq
-      case None => throw new IllegalArgumentException("Expected Member of " + primaryRules.keys + ", found: " + rule)
-    }
-  }
-
 }
 
+trait BaseRuleParser extends JavaTokenParsers {
+  
+  def iconFromClass: CellState
+  
+  @tailrec final def buildStringParser(sParser: Option[Parser[String]], strings: Iterable[String]): Parser[String] = {
+    val rule = strings.head
+    val updatedParser: Parser[String] = sParser match {
+      case Some(parser) => parser.append(rule)
+      case None => rule
+    }
+    if(strings.tail.isEmpty) return updatedParser
+    return buildStringParser(Some(updatedParser), strings.tail)
+  }
+  
+  // TODO: DRY
+  def getRule(rulex: Any, rules: Map[String, AiRule]) = {
+    val rule = rulex.toString
+    rules.get(rule) match {
+      case Some(openingRule) => openingRule
+      case _ => throw new IllegalArgumentException("Expected Member of " + rules.keys + ", found: " + rule)
+    }
+  }
+  
+  // TODO: DRY
+  def getRule(rulex: Any, rules: Map[String, ProbableRule]) = {
+    val rule = rulex.toString
+    rules.get(rule) match {
+      case Some(openingRule) => openingRule
+      case _ => throw new IllegalArgumentException("Expected Member of " + rules.keys + ", found: " + rule)
+    }
+  }
+  
+  // TODO:  DRY
+  def getRule(rulex: Any, rules: Map[String, Seq[AiRule]]) = {
+    val rule = rulex.toString
+    rules.get(rule) match {
+      case Some(openingRule) => openingRule
+      case _ => throw new IllegalArgumentException("Expected Member of " + rules.keys + ", found: " + rule)
+    }
+  }
+  
+}

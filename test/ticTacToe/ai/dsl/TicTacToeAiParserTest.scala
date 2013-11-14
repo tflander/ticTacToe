@@ -112,7 +112,7 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
       val e = intercept[IllegalArgumentException] {
         configBuilder.parseRemovePrimaryRule("misses the invalidRule rule")
       }
-      e.getMessage should include("Expected Member of Set(cornerNearOpponent, priority), found: invalidRule")
+      e.getMessage should include("Member of Set(cornerNearOpponent, priority)")
     }
   }
 
