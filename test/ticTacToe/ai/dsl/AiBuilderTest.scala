@@ -18,6 +18,6 @@ class AiBuilderTest extends FunSpec with ShouldMatchers {
     val e = intercept[IllegalArgumentException] {
     	buildAi(X, "is sorta unbeatable")      
     }
-    e.getMessage() should include ("Expected Member of Set(unbeatable, random), found: sorta")
+    e.getMessage() should include ("Member of Set(unbeatable, random)")
   }
 }

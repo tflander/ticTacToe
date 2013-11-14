@@ -37,10 +37,9 @@ class PrimaryRuleParserTest extends FunSpec with ShouldMatchers {
     }
     
     it("gives error message for invalid primary rule") {
-      val e = intercept[IllegalArgumentException] {
-    	  configBuilder.parsePrimaryRule("is notValid")
-      }
-      e.getMessage should be("Expected Member of Set(unbeatable, random), found: notValid")
+      val p = configBuilder.parsePrimaryRule("is notValid")
+      p.successful should be(false)
+      p.toString should include("Member of Set(unbeatable, random)")
     }
   }
   

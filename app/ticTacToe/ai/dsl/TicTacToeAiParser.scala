@@ -86,7 +86,8 @@ trait OpeningRuleParser extends BaseRuleParser {
 
 trait PrimaryRuleParser extends BaseRuleParser {
 
-  def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> ident ^^ (getRule(_, primaryRules))
+  def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> primaryRuleNames ^^ (getRule(_, primaryRules))
+  def primaryRuleNames: Parser[String] = buildStringParser(None, primaryRules.keys) | ("Expected Member of " + primaryRules.keys)
   def primaryRuleDecorator: Parser[String] = "is" | "otherwise is" | ""
 
   val primaryRules: Map[String, Seq[AiRule]] = Map(
