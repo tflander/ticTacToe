@@ -10,11 +10,11 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
     def parseProbability(string: String) = parseAll(probability, string)
     def parseProbableException(string: String) = parseAll(probableException, string)
     def parseSimpleException(string: String) = parseAll(simpleException, string)
-    
+
     def parseException(string: String) = parseAll(exception, string)
     def parseExceptionRule(string: String) = parseAll(exceptionRule, string)
     def parseExceptionRules(string: String) = parseAll(exceptionRules, string)
-    
+
     def parseRemovePrimaryRule(string: String) = parseAll(removeFromPrimaryRule, string)
   }
 
@@ -55,7 +55,7 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
       p.successful should be(true)
       p.get.getClass.getSimpleName should be("Blocker")
     }
-    
+
     it("allows the decorator 'except' with a probability rule") {
       val p = configBuilder.parseExceptionRule("except misses blocks 10% of the time")
       p.successful should be(true)
@@ -65,12 +65,12 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
           rule.baseRule.getClass.getSimpleName should be("Blocker")
           rule.probability should be(0.90)
         }
-      } 
+      }
     }
   }
-  
+
   describe("removing a primary rule") {
-    
+
     it("can remove the corner near opponent rule") {
       val p = configBuilder.parseRemovePrimaryRule("misses the cornerNearOpponent rule")
       p.successful should be(true)
@@ -80,9 +80,9 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
           rule.baseRule.getClass.getSimpleName should be("CornerNearOpponent")
           rule.probability should be(0.0)
         }
-      }      
+      }
     }
-    
+
     it("can remove the corner near opponent rule using 'except' decorator") {
       val p = configBuilder.parseRemovePrimaryRule("except misses the cornerNearOpponent rule")
       println(p)
@@ -93,9 +93,9 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
           rule.baseRule.getClass.getSimpleName should be("CornerNearOpponent")
           rule.probability should be(0.0)
         }
-      }      
+      }
     }
-    
+
     it("can remove the priority rule") {
       val p = configBuilder.parseRemovePrimaryRule("misses the priority rule")
       p.successful should be(true)
@@ -105,14 +105,13 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
           rule.baseRule.getClass.getSimpleName should be("Priority")
           rule.probability should be(0.0)
         }
-      }      
-    }
-    
-    it("gives error message for invalid rule to remove") {
-      val e = intercept[IllegalArgumentException] {
-        configBuilder.parseRemovePrimaryRule("misses the invalidRule rule")
       }
-      e.getMessage should include("Member of Set(cornerNearOpponent, priority)")
+    }
+
+    it("gives error message for invalid rule to remove") {
+      val p = configBuilder.parseRemovePrimaryRule("misses the invalidRule rule")
+      p.successful should be(false)
+      p.toString should include("Member of Set(cornerNearOpponent, priority)")
     }
   }
 
@@ -148,14 +147,11 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
       p.successful should be(true)
       p.get.getClass.getSimpleName should be("Blocker")
     }
-    
-    it("should fail an invalid rule") {
-      val e = intercept[IllegalArgumentException] {
-    	  configBuilder.parseSimpleException("never misses a meal")
-      }
-      e.getMessage should include("Expected Member of Set(win, block), found: meal")
-    }
 
+    it("should fail an invalid rule") {
+      val p = configBuilder.parseSimpleException("never misses a meal")
+      p.toString should include("Member of Set(win, block)")
+    }
   }
 
   describe("when parse probable exception") {
@@ -187,7 +183,7 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
       p.get.baseRule.getClass.getSimpleName should be("Blocker")
       p.get.probability should be(0.9)
     }
-    
+
     it("supports alternative syntax for winning") {
       val p = configBuilder.parseProbableException("plays win 90% of the time")
       p.successful should be(true)
@@ -210,5 +206,5 @@ class TicTacToeAiParserTest extends FunSpec with ShouldMatchers {
       p.get should be(0.2)
     }
   }
-  
+
 }
