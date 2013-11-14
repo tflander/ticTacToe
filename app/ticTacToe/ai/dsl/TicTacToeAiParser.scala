@@ -129,7 +129,7 @@ trait BaseRuleParser extends JavaTokenParsers {
   def getRule[T](rulex: Any, rules: Map[String, T]) = {
     val rule = rulex.toString
     rules.get(rule) match {
-      case Some(openingRule) => openingRule
+      case Some(ruleValue) => ruleValue
       case _ => throw new IllegalArgumentException("Expected Member of " + rules.keys + ", found: " + rule)
     }
   }
