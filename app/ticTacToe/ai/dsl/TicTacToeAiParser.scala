@@ -30,6 +30,34 @@ class TicTacToeAiParser(icon: CellState) extends OpeningRuleParser with PrimaryR
   }
 }
 
+trait OpeningRuleParser extends BaseRuleParser {
+
+  val openingRules = Map(
+    "randomly" -> new RandomRule(iconFromClass),
+    "centerOrCorner" -> new CenterOrCorner(iconFromClass))
+
+  def openingRule: Parser[AiRule] = "opens" ~ opt("with") ~> openingRuleNames ^^ (getRule(_, openingRules))
+  def openingRuleNames: Parser[String] = buildStringParser(openingRules.keys) | ("Expected Member of " + openingRules.keys)
+}
+
+trait PrimaryRuleParser extends BaseRuleParser {
+
+  def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> primaryRuleNames ^^ (getRule(_, primaryRules))
+  def primaryRuleNames: Parser[String] = buildStringParser(primaryRules.keys) | ("Expected Member of " + primaryRules.keys)
+  def primaryRuleDecorator: Parser[String] = "is" | "otherwise is" | ""
+
+  val primaryRules: Map[String, Seq[AiRule]] = Map(
+    "unbeatable" ->
+      Seq(
+        new Opener(iconFromClass),
+        new Winner(iconFromClass),
+        new Blocker(iconFromClass),
+        new CornerNearOpponent(iconFromClass),
+        new Priority(iconFromClass)),
+    "random" ->
+      Seq(new RandomRule(iconFromClass)))
+}
+
 trait ExceptionRuleParser extends BaseRuleParser {
 
   val simpleRules = Map(
@@ -78,35 +106,6 @@ trait ExceptionRuleParser extends BaseRuleParser {
       case None => throw new IllegalArgumentException("unexpected rule " + probableRule)
     }
   }
-
-}
-
-trait OpeningRuleParser extends BaseRuleParser {
-
-  val openingRules = Map(
-    "randomly" -> new RandomRule(iconFromClass),
-    "centerOrCorner" -> new CenterOrCorner(iconFromClass))
-
-  def openingRule: Parser[AiRule] = "opens" ~ opt("with") ~> openingRuleNames ^^ (getRule(_, openingRules))
-  def openingRuleNames: Parser[String] = buildStringParser(openingRules.keys) | ("Expected Member of " + openingRules.keys)
-}
-
-trait PrimaryRuleParser extends BaseRuleParser {
-
-  def primaryRule: Parser[Seq[AiRule]] = primaryRuleDecorator ~> primaryRuleNames ^^ (getRule(_, primaryRules))
-  def primaryRuleNames: Parser[String] = buildStringParser(primaryRules.keys) | ("Expected Member of " + primaryRules.keys)
-  def primaryRuleDecorator: Parser[String] = "is" | "otherwise is" | ""
-
-  val primaryRules: Map[String, Seq[AiRule]] = Map(
-    "unbeatable" ->
-      Seq(
-        new Opener(iconFromClass),
-        new Winner(iconFromClass),
-        new Blocker(iconFromClass),
-        new CornerNearOpponent(iconFromClass),
-        new Priority(iconFromClass)),
-    "random" ->
-      Seq(new RandomRule(iconFromClass)))
 }
 
 trait BaseRuleParser extends JavaTokenParsers {
@@ -127,31 +126,12 @@ trait BaseRuleParser extends JavaTokenParsers {
     return buildStringParser(Some(updatedParser), strings.tail)
   }
 
-  // TODO: DRY
-  def getRule(rulex: Any, rules: Map[String, AiRule]) = {
+  def getRule[T](rulex: Any, rules: Map[String, T]) = {
     val rule = rulex.toString
     rules.get(rule) match {
       case Some(openingRule) => openingRule
       case _ => throw new IllegalArgumentException("Expected Member of " + rules.keys + ", found: " + rule)
     }
   }
-
-  // TODO: DRY
-  def getRule(rulex: Any, rules: Map[String, ProbableRule]) = {
-    val rule = rulex.toString
-    rules.get(rule) match {
-      case Some(openingRule) => openingRule
-      case _ => throw new IllegalArgumentException("Expected Member of " + rules.keys + ", found: " + rule)
-    }
-  }
-
-  // TODO:  DRY
-  def getRule(rulex: Any, rules: Map[String, Seq[AiRule]]) = {
-    val rule = rulex.toString
-    rules.get(rule) match {
-      case Some(openingRule) => openingRule
-      case _ => throw new IllegalArgumentException("Expected Member of " + rules.keys + ", found: " + rule)
-    }
-  }
-
+  
 }
