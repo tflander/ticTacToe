@@ -7,6 +7,6 @@ import ticTacToe.ai.dsl.AiBuilder._
 object AiBuilder extends Controller {
 
   def index = Action {
-    Ok(views.html.aiBuilder(usage))
+    Ok(views.html.aiBuilder(usage, ""))
   }
 }

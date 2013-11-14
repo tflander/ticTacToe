@@ -32,4 +32,10 @@ $(document).ready(function() {
 		allowClickOnEmptyCells();
 	});
 
+	$("#usageWrapper").click(function(){
+		$("#usage").slideToggle();
+	});
+	
+	$("#usage").slideUp();
+	
 });

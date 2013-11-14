@@ -1,7 +1,12 @@
-@(message: String)
+@(usage: String, rule: String)
 
 @main("Tic Tac Toe") {
     <h1>Tic Tac Toe AI Builder</h1>
     
-   	<p id="message">@Html(message)</p>
+    <div id = "usageWrapper">Click to show/hide Api Usage:</div>
+   	<div id="usage">@Html(usage)</div>
+   	
+<textarea rows="4" cols="50">
+@rule 
+</textarea>   	
 }

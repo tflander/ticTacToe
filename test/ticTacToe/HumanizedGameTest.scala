@@ -20,11 +20,11 @@ class HumanizedGameTest extends FunSpec with ShouldMatchers {
 
   val computerPlayerRules = Seq(
     "is unbeatable, except misses the priority rule",
-    "is unbeatable, except misses the corner near opponent rule",
+    "is unbeatable, except misses the cornerNearOpponent rule",
     "is unbeatable",
     "opens randomly, otherwise is unbeatable",
-    "opens with center or corner, otherwise is random",
-    "opens with center or corner, otherwise is random, blocks 90% of the time, and never misses a win",
+    "opens with centerOrCorner, otherwise is random",
+    "opens with centerOrCorner, otherwise is random, blocks 90% of the time, and never misses a win",
     "opens randomly, otherwise is unbeatable, except misses blocks 10% of the time",
     "is unbeatable, except misses wins 10% of the time")
 
