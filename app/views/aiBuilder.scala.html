@@ -6,20 +6,26 @@
     <div id = "usageWrapper">Click to show/hide Api Usage:</div>
    	<div id="usage">@Html(usage)</div>
 
-click example to try it.   	
-   	<ol>
-    <li class="ruleText">is unbeatable, except misses wins 10% of the time</li>
-   	<li class="ruleText">is unbeatable, except misses the priority rule</li>
-   	<li class="ruleText">is unbeatable, except misses the cornerNearOpponent rule</li>
-   	<li class="ruleText">is unbeatable</li>
-   	<li class="ruleText">opens randomly, otherwise is unbeatable</li>
-   	<li class="ruleText">opens with centerOrCorner, otherwise is random</li>
-   	<li class="ruleText">opens with centerOrCorner, otherwise is random, blocks 90% of the time, and never misses a win</li>
-   	<li class="ruleText">opens randomly, otherwise is unbeatable, except misses blocks 10% of the time</li>
-   	</ol>
-<textarea id="editRule" rows="4" cols="50">
-@rule 
-</textarea>   	
+<div class="row">
+	<div class="col-md-6">
+	click example to try it.   	
+	   	<ol>
+	    <li class="ruleText">is unbeatable, except misses wins 10% of the time</li>
+	   	<li class="ruleText">is unbeatable, except misses the priority rule</li>
+	   	<li class="ruleText">is unbeatable, except misses the cornerNearOpponent rule</li>
+	   	<li class="ruleText">is unbeatable</li>
+	   	<li class="ruleText">opens randomly, otherwise is unbeatable</li>
+	   	<li class="ruleText">opens with centerOrCorner, otherwise is random</li>
+	   	<li class="ruleText">opens with centerOrCorner, otherwise is random, blocks 90% of the time, and never misses a win</li>
+	   	<li class="ruleText">opens randomly, otherwise is unbeatable, except misses blocks 10% of the time</li>
+	   	</ol>
+	</div>
+	<div class="col-md-6">
+		<textarea id="editRule" rows="4" cols="50">
+			@rule 
+		</textarea>
+	</div>   	
+</div>
 
 <p><pre>
 	@results
