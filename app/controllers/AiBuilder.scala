@@ -4,6 +4,7 @@ import play.api._
 import play.api.mvc._
 import ticTacToe.CellState._
 import ticTacToe.ai.dsl.AiBuilder._
+import controllers.support.AiBuilderViewParams
 
 object AiBuilder extends Controller {
   
@@ -21,15 +22,40 @@ object AiBuilder extends Controller {
 	   	)
 
   def index = Action {
-    Ok(views.html.aiBuilder(sampleRules, usage, "", "", defaultResult, defaultResult))
+    
+    val params = AiBuilderViewParams (
+		sampleRules = sampleRules, 
+		usage = usage
+    )
+    
+    Ok(views.html.aiBuilder(params))
   }
 
   def execRule(rule: String) = Action {
-    Ok(views.html.aiBuilder(sampleRules, usage, rule, "", ruleResult(rule), defaultResult))
+    
+    val params = AiBuilderViewParams (
+		sampleRules = sampleRules, 
+		usage = usage,
+		xRule = rule, 
+		xResult = ruleResult(rule)
+    )
+    
+    Ok(views.html.aiBuilder(params))
   }
 
   def execRules(xRule: String, oRule: String) = Action {
-    Ok(views.html.aiBuilder(sampleRules, usage, xRule, oRule, ruleResult(xRule), ruleResult(oRule)))
+
+    val params = AiBuilderViewParams (
+		sampleRules = sampleRules, 
+		usage = usage,
+		xRule = xRule, 
+		oRule = oRule, 
+		xResult = ruleResult(xRule),
+		oResult = ruleResult(oRule),
+		matchResults = "todo: build match results"
+    )
+
+    Ok(views.html.aiBuilder(params))
   }
 
   def ruleResult(rule: String) = {

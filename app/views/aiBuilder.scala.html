@@ -1,4 +1,4 @@
-@(sampleRules: Seq[String], usage: String, xRule: String, oRule: String, xResult: (Boolean, String), oResult: (Boolean, String))
+@(p: controllers.support.AiBuilderViewParams)
 
 @main("Tic Tac Toe") {
     <h1>Tic Tac Toe AI Builder</h1>
@@ -7,7 +7,7 @@
 	<div class="col-md-6">
 	<label for="ruleList">click example to try it.</label>
 	   	<ul id="ruleList" class="list-group">
-		   	@for(sampleRule <- sampleRules) {
+		   	@for(sampleRule <- p.sampleRules) {
 		    	<li class="ruleText list-group-item"><span class="btn btn-default x">X</span><span class="btn btn-default o">O</span>
 		    		<span class="sampleRule">@sampleRule</span>
 		    	</li>
@@ -17,38 +17,38 @@
 	<div class="col-md-6">
         <label for="editRuleAsX">Enter rule for X or choose rule from list:</label>
         <p>
-			<textarea id="editRuleAsX" rows="4" cols="50">@xRule</textarea>
+			<textarea id="editRuleAsX" rows="4" cols="50">@p.xRule</textarea>
 		</p>
 		
         <label for="editRuleAsO">Enter rule for O or choose rule from list:</label>
         <p>
-			<textarea id="editRuleAsO" rows="4" cols="50">@oRule</textarea>
+			<textarea id="editRuleAsO" rows="4" cols="50">@p.oRule</textarea>
 		</p>
 	</div>   	
     <input type="button" id="parseRule" value="parse rules"/>
 </div>
 
 
-@xResult._1 match {
+@p.xResult._1 match {
 	case true => {<div class="panel-success">}
 	case false => {<div class="panel-danger">}
 }
 
 <div class="panel-heading">Parse Results for X</div>
-<pre>@xResult._2</pre></div>
+<pre>@p.xResult._2</pre></div>
 
-@oResult._1 match {
+@p.oResult._1 match {
 	case true => {<div class="panel-success">}
 	case false => {<div class="panel-danger">}
 }
 
 <div class="panel-heading">Parse Results for O</div>
-<pre>@oResult._2</pre></div>
+<pre>@p.oResult._2</pre></div>
 
 
 
 
 <div id = "usageWrapper">Click to show/hide Api Usage:</div>
-<div id="usage">@Html(usage)</div>
+<div id="usage">@Html(p.usage)</div>
 
 }
