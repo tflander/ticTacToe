@@ -40,8 +40,17 @@ $(document).ready(function() {
 	
 	$("#usage").slideUp();
 	
-	$("li.ruleText").click(function() {
-		$("#editRule").text($(this).text());
+	$("li span.x").click(function() {
+		$("#editRuleAsX").text($(this).siblings(".sampleRule").text());
+	});
+
+	$("li span.o").click(function() {
+		$("#editRuleAsO").text($(this).siblings(".sampleRule").text());
 	});
 	
+	$("input#parseRule").click(function() {
+		var xRule = $("textarea#editRuleAsX").val();
+		var oRule = $("textarea#editRuleAsO").val();
+		document.location.href = "/aibuilder/" + encodeURIComponent(xRule) + "/" + encodeURIComponent(oRule);
+	});
 });

@@ -63,4 +63,11 @@ class HumanizedAi(val icon: CellState, val openingRule: Option[AiRule], val prim
     return board.setCellState(move, icon)
 
   }
+  
+  override def toString() = {
+    "icon=" + icon + "\n" +
+    "opening=" + openingRule + "\n" +
+    "exceptionRules=" + exceptionRules + "\n" +
+    "primaryRules=" + primaryRulesExceptionsRemoved
+  }
 }

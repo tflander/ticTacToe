@@ -1,33 +1,54 @@
-@(usage: String, rule: String, results: String)
+@(sampleRules: Seq[String], usage: String, xRule: String, oRule: String, xResult: (Boolean, String), oResult: (Boolean, String))
 
 @main("Tic Tac Toe") {
     <h1>Tic Tac Toe AI Builder</h1>
-    
-    <div id = "usageWrapper">Click to show/hide Api Usage:</div>
-   	<div id="usage">@Html(usage)</div>
-
+        
 <div class="row">
 	<div class="col-md-6">
-	click example to try it.   	
-	   	<ol>
-	    <li class="ruleText">is unbeatable, except misses wins 10% of the time</li>
-	   	<li class="ruleText">is unbeatable, except misses the priority rule</li>
-	   	<li class="ruleText">is unbeatable, except misses the cornerNearOpponent rule</li>
-	   	<li class="ruleText">is unbeatable</li>
-	   	<li class="ruleText">opens randomly, otherwise is unbeatable</li>
-	   	<li class="ruleText">opens with centerOrCorner, otherwise is random</li>
-	   	<li class="ruleText">opens with centerOrCorner, otherwise is random, blocks 90% of the time, and never misses a win</li>
-	   	<li class="ruleText">opens randomly, otherwise is unbeatable, except misses blocks 10% of the time</li>
-	   	</ol>
+	<label for="ruleList">click example to try it.</label>
+	   	<ul id="ruleList" class="list-group">
+		   	@for(sampleRule <- sampleRules) {
+		    	<li class="ruleText list-group-item"><span class="btn btn-default x">X</span><span class="btn btn-default o">O</span>
+		    		<span class="sampleRule">@sampleRule</span>
+		    	</li>
+		   	}
+	   	</ul>
 	</div>
 	<div class="col-md-6">
-		<textarea id="editRule" rows="4" cols="50">
-			@rule 
-		</textarea>
+        <label for="editRuleAsX">Enter rule for X or choose rule from list:</label>
+        <p>
+			<textarea id="editRuleAsX" rows="4" cols="50">@xRule</textarea>
+		</p>
+		
+        <label for="editRuleAsO">Enter rule for O or choose rule from list:</label>
+        <p>
+			<textarea id="editRuleAsO" rows="4" cols="50">@oRule</textarea>
+		</p>
 	</div>   	
+    <input type="button" id="parseRule" value="parse rules"/>
 </div>
 
-<p><pre>
-	@results
-</pre></p>
+
+@xResult._1 match {
+	case true => {<div class="panel-success">}
+	case false => {<div class="panel-danger">}
+}
+
+<div class="panel-heading">Parse Results for X</div>
+<pre>@xResult._2</pre></div>
+
+@oResult._1 match {
+	case true => {<div class="panel-success">}
+	case false => {<div class="panel-danger">}
+}
+
+<div class="panel-heading">Parse Results for O</div>
+<pre>@oResult._2</pre></div>
+
+
+
+
+<div id = "usageWrapper">Click to show/hide Api Usage:</div>
+<div id="usage">@Html(usage)</div>
+
 }

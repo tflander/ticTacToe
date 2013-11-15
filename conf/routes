@@ -5,6 +5,7 @@
 # Home page
 GET     /aibuilder					controllers.AiBuilder.index
 GET     /aibuilder/:rule            controllers.AiBuilder.execRule(rule)
+GET     /aibuilder/:xRule/:oRule    controllers.AiBuilder.execRules(xRule, oRule)
 GET     /                           controllers.Application.index
 GET     /:setup                     controllers.Application.move(setup: String)
 
