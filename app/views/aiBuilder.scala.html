@@ -45,8 +45,12 @@
 <div class="panel-heading">Parse Results for O</div>
 <pre>@p.oResult._2</pre></div>
 
-
-
+@if(!p.matchResults.isEmpty) {
+	<div class="panel-success">
+		<div class="panel-heading">Match Results</div>
+		@p.matchResults
+	</div>
+}
 
 <div id = "usageWrapper">Click to show/hide Api Usage:</div>
 <div id="usage">@Html(p.usage)</div>
