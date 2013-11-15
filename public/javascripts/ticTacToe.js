@@ -16,6 +16,7 @@ function disableClicks() {
 
 $(document).ready(function() {
 
+	// start behavior for playing tic-tac-toe
 	$(".X").html("X")
 	$(".O").html("O")
 	$(".Clear").html("A")
@@ -32,10 +33,15 @@ $(document).ready(function() {
 		allowClickOnEmptyCells();
 	});
 
+	// start behavior for the aibuilder
 	$("#usageWrapper").click(function(){
 		$("#usage").slideToggle();
 	});
 	
 	$("#usage").slideUp();
+	
+	$("li.ruleText").click(function() {
+		$("#editRule").text($(this).text());
+	});
 	
 });

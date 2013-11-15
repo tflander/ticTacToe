@@ -3,7 +3,7 @@ package ticTacToe.ai.rule
 import ticTacToe.CellState._
 import ticTacToe.Board
 
-class CornerNearOpponent(icon: CellState) extends AiRule {
+case class CornerNearOpponent(icon: CellState) extends AiRule {
 
   val opponent = if (icon == X) O else X
 

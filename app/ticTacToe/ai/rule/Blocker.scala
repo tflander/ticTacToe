@@ -2,7 +2,7 @@ package ticTacToe.ai.rule
 import ticTacToe.CellState._
 import ticTacToe.Board
 
-class Blocker(icon: CellState) extends AiRule with LineAi {
+case class Blocker(icon: CellState) extends AiRule with LineAi {
 
   val opponent = if (icon == X) O else X
 

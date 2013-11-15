@@ -2,7 +2,7 @@ package ticTacToe.ai.rule
 import ticTacToe.CellState._
 import ticTacToe.Board
 
-class Center(icon: CellState) extends AiRule {
+case class Center(icon: CellState) extends AiRule {
 
   override def squareToPlay(board: Board): Option[(Int, Int)] = {
     val availableMoves = board.emptySquares

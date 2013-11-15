@@ -14,27 +14,17 @@ class ConfigSpike(icon: CellState) extends TicTacToeAiParser(icon) {
 class HumanizedConfigTest extends FunSpec with ShouldMatchers {
 
   val configBuilder = new ConfigSpike(X)
-  val unbeatableRules = Seq("Opener", "Winner", "Blocker", "CornerNearOpponent", "Priority")
+  val unbeatableRules = "List(Opener(X), Winner(X), Blocker(X), CornerNearOpponent(X), Priority(X))"
   
   describe("Humanized Config Tests") {
     
-    def namesOf(rules: Seq[AiRule]) = rules map(nameOf)
-    def nameOf(rule: AiRule) = {
-      rule match {
-        case pRule: ProbableRule => {
-          pRule.getClass.getSimpleName + "(" + pRule.baseRule.getClass.getSimpleName + ", " + pRule.probability + ")"
-        }
-        case _ => rule.getClass.getSimpleName
-      }
-    }
-
     it("should create an unbeatable AI") {
       val aiRules = configBuilder.buildAi("is unbeatable");
       aiRules.successful should be(true)
       val ai = aiRules.get
       ai.icon should be(X)
       ai.openingRule should be(None)
-      namesOf(ai.primaryRules) should be (unbeatableRules)
+      ai.primaryRules.toString should be (unbeatableRules)
       ai.exceptionRules should be(Nil)
     }
     
@@ -44,8 +34,8 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       val ai = aiRules.get
       ai.icon should be(X)
       ai.openingRule should be(None)
-      namesOf(ai.primaryRulesExceptionsRemoved) should be (List("Opener", "Winner", "Blocker", "Priority"))
-      namesOf(ai.exceptionRules) should be(Seq("ProbableRule(CornerNearOpponent, 0.0)"))
+      ai.primaryRulesExceptionsRemoved.toString should be ("List(Opener(X), Winner(X), Blocker(X), Priority(X))")
+      ai.exceptionRules.toString should be("List(ProbableRule(CornerNearOpponent(X),0.0))")
     }
     
     it("should create an AI that doesn't know the priority rule, otherwise is unbeatable") {
@@ -54,8 +44,8 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       val ai = aiRules.get
       ai.icon should be(X)
       ai.openingRule should be(None)
-      namesOf(ai.primaryRulesExceptionsRemoved) should be (List("Opener", "Winner", "Blocker", "CornerNearOpponent"))
-      namesOf(ai.exceptionRules) should be(Seq("ProbableRule(Priority, 0.0)"))
+      ai.primaryRulesExceptionsRemoved.toString should be ("List(Opener(X), Winner(X), Blocker(X), CornerNearOpponent(X))")
+      ai.exceptionRules.toString should be("List(ProbableRule(Priority(X),0.0))")
     }
 
     it("should create an AI that opens randomly") {
@@ -63,8 +53,8 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       aiRules.successful should be(true)
       val ai = aiRules.get
       ai.icon should be(X)
-      nameOf(ai.openingRule.get) should be("RandomRule")
-      namesOf(ai.primaryRules) should be (Seq("Opener", "Winner", "Blocker", "CornerNearOpponent", "Priority"))
+      ai.openingRule.get.toString should be("RandomRule(X)")
+      ai.primaryRules.toString should be ("List(Opener(X), Winner(X), Blocker(X), CornerNearOpponent(X), Priority(X))")
       ai.exceptionRules should be(Nil)
     }
 
@@ -73,8 +63,8 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       aiRules.successful should be(true)
       val ai = aiRules.get
       ai.icon should be(X)
-      nameOf(ai.openingRule.get) should be("CenterOrCorner")
-      namesOf(ai.primaryRules) should be (Seq("RandomRule"))
+      ai.openingRule.get.toString should be("CenterOrCorner(X)")
+      ai.primaryRules.toString should be ("List(RandomRule(X))")
       ai.exceptionRules should be(Nil)
     }
 
@@ -83,9 +73,9 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       aiRules.successful should be(true)
       val ai = aiRules.get
       ai.icon should be(X)
-      nameOf(ai.openingRule.get) should be("CenterOrCorner")
-      namesOf(ai.primaryRules) should be (Seq("RandomRule"))
-      namesOf(ai.exceptionRules) should be(Seq("ProbableRule(Blocker, 0.9)", "Winner"))
+      ai.openingRule.get.toString should be("CenterOrCorner(X)")
+      ai.primaryRules.toString should be ("List(RandomRule(X))")
+      ai.exceptionRules.toString should be("List(ProbableRule(Blocker(X),0.9), Winner(X))")
     }
 
     it("same as above, but can use 'and' to chain exception rules") {
@@ -93,9 +83,9 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       aiRules.successful should be(true)
       val ai = aiRules.get
       ai.icon should be(X)
-      nameOf(ai.openingRule.get) should be("CenterOrCorner")
-      namesOf(ai.primaryRules) should be (Seq("RandomRule"))
-      namesOf(ai.exceptionRules) should be(Seq("ProbableRule(Blocker, 0.9)", "Winner"))
+      ai.openingRule.get.toString should be("CenterOrCorner(X)")
+      ai.primaryRules.toString should be ("List(RandomRule(X))")
+      ai.exceptionRules.toString should be("List(ProbableRule(Blocker(X),0.9), Winner(X))")
     }
 
     it("supports using whitespace to stack vertically") {
@@ -108,9 +98,9 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       aiRules.successful should be(true)
       val ai = aiRules.get
       ai.icon should be(X)
-      nameOf(ai.openingRule.get) should be("CenterOrCorner")
-      namesOf(ai.primaryRules) should be (Seq("RandomRule"))
-      namesOf(ai.exceptionRules) should be(Seq("ProbableRule(Winner, 0.9)", "Blocker"))
+      ai.openingRule.toString should be("Some(CenterOrCorner(X))")
+      ai.primaryRules.toString should be ("List(RandomRule(X))")
+      ai.exceptionRules.toString should be("List(ProbableRule(Winner(X),0.9), Blocker(X))")
     }
 
     it("should create an AI that opens randomly, plays strong, but sometimes misses a block") {
@@ -118,9 +108,9 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       aiRules.successful should be(true)
       val ai = aiRules.get
       ai.icon should be(X)
-      nameOf(ai.openingRule.get) should be("RandomRule")
-      namesOf(ai.primaryRulesExceptionsRemoved) should be (Seq("Opener", "Winner", "CornerNearOpponent", "Priority"))
-      namesOf(ai.exceptionRules) should be(Seq("ProbableRule(Blocker, 0.9)"))
+      ai.openingRule.toString should be("Some(RandomRule(X))")
+      ai.primaryRulesExceptionsRemoved.toString should be ("List(Opener(X), Winner(X), CornerNearOpponent(X), Priority(X))")
+      ai.exceptionRules.toString should be("List(ProbableRule(Blocker(X),0.9))")
     }
 
     it("should create an AI that is generally unbeatable, but sometimes misses a win") {
@@ -129,8 +119,8 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       val ai = aiRules.get
       ai.icon should be(X)
       ai.openingRule should be(None)
-      namesOf(ai.primaryRulesExceptionsRemoved) should be (Seq("Opener", "Blocker", "CornerNearOpponent", "Priority"))
-      namesOf(ai.exceptionRules) should be(Seq("ProbableRule(Winner, 0.9)"))
+      ai.primaryRulesExceptionsRemoved.toString should be ("List(Opener(X), Blocker(X), CornerNearOpponent(X), Priority(X))")
+      ai.exceptionRules.toString should be("List(ProbableRule(Winner(X),0.9))")
     }
 
     it("can short-hand an exception") {
@@ -139,8 +129,8 @@ class HumanizedConfigTest extends FunSpec with ShouldMatchers {
       val ai = aiRules.get
       ai.icon should be(X)
       ai.openingRule should be(None)
-      namesOf(ai.primaryRulesExceptionsRemoved) should be (Seq("Opener", "Blocker", "CornerNearOpponent", "Priority"))
-      namesOf(ai.exceptionRules) should be(Seq("ProbableRule(Winner, 0.9)"))
+      ai.primaryRulesExceptionsRemoved.toString should be ("List(Opener(X), Blocker(X), CornerNearOpponent(X), Priority(X))")
+      ai.exceptionRules.toString should be("List(ProbableRule(Winner(X),0.9))")
     }
 
   }

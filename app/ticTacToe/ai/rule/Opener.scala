@@ -2,7 +2,7 @@ package ticTacToe.ai.rule
 import ticTacToe.CellState._
 import ticTacToe.Board
 
-class Opener(icon: CellState) extends AiRule {
+case class Opener(icon: CellState) extends AiRule {
 
   val opponent = if (icon == X) O else X
 
