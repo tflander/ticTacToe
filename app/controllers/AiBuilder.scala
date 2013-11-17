@@ -52,8 +52,9 @@ object AiBuilder extends Controller {
     	val o = buildAi(O, oRule)
     	
     	def roundsPerMatch = 100
-    	val a = runMatch(roundsPerMatch, (xRule, oRule))
-    	return a.toString
+    	runMatch(roundsPerMatch, (xRule, oRule))
+    		.map(ruleAndScore => ruleAndScore._1 + " " + ruleAndScore._2 + " points")
+    		.mkString("<br />")
     }
     
     val matchResults = if(xResult._1 && oResult._1) run(xRule, oRule) else ""

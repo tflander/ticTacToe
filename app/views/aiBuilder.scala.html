@@ -24,33 +24,36 @@
         <p>
 			<textarea id="editRuleAsO" rows="4" cols="50">@p.oRule</textarea>
 		</p>
+	    <input type="button" id="parseRule" value="parse rules and run match"/>
+		@if(!p.matchResults.isEmpty) {
+			<div class="panel-success">
+				<div class="panel-heading">Match Results</div>
+				<p>@Html(p.matchResults)</p>
+			</div>
+		}
 	</div>   	
-    <input type="button" id="parseRule" value="parse rules"/>
 </div>
 
-
-@p.xResult._1 match {
-	case true => {<div class="panel-success">}
-	case false => {<div class="panel-danger">}
-}
-
-<div class="panel-heading">Parse Results for X</div>
-<pre>@p.xResult._2</pre></div>
-
-@p.oResult._1 match {
-	case true => {<div class="panel-success">}
-	case false => {<div class="panel-danger">}
-}
-
-<div class="panel-heading">Parse Results for O</div>
-<pre>@p.oResult._2</pre></div>
-
-@if(!p.matchResults.isEmpty) {
-	<div class="panel-success">
-		<div class="panel-heading">Match Results</div>
-		@p.matchResults
+<div class="row">
+	<div class="col-md-6">
+		@p.xResult._1 match {
+			case true => {<div class="panel-success">}
+			case false => {<div class="panel-danger">}
+		}
+		
+		<div class="panel-heading">Parse Results for X</div>
+		<pre>@p.xResult._2</pre></div>
 	</div>
-}
+	<div class="col-md-6">	
+		@p.oResult._1 match {
+			case true => {<div class="panel-success">}
+			case false => {<div class="panel-danger">}
+		}
+		
+		<div class="panel-heading">Parse Results for O</div>
+		<pre>@p.oResult._2</pre></div>
+	</div>
+</div>
 
 <div id = "usageWrapper">Click to show/hide Api Usage:</div>
 <div id="usage">@Html(p.usage)</div>

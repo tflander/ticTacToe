@@ -12,6 +12,7 @@ import ticTacToe.ai.rule.CornerNearOpponent
 import ticTacToe.ai.rule.Priority
 import ticTacToe.ai.rule.ProbableRule
 import ticTacToe.ai.dsl.TicTacToeAiParser
+import AiVersesAiMatchRunner._
 
 class HumanizedGameTest extends FunSpec with ShouldMatchers {
 
