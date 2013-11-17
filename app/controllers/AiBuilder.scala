@@ -53,7 +53,7 @@ object AiBuilder extends Controller {
     	
     	def roundsPerMatch = 100
     	runMatch(roundsPerMatch, (xRule, oRule))
-    		.map(ruleAndScore => ruleAndScore._1 + " " + ruleAndScore._2 + " points")
+    		.map(score => score.player + " w/l/t " + score.wins + "/" + score.losses + "/" + score.ties + " " + score.points + " points")
     		.mkString("<br />")
     }
     

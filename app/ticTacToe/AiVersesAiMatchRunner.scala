@@ -5,7 +5,7 @@ import ticTacToe.CellState._
 import ticTacToe.ai.dsl.AiBuilder._
 
 object AiVersesAiMatchRunner {
-  def runMatch(roundsPerMatch: Int, matchUp: (String, String)): Seq[(String, Int)] = {
+  def runMatch(roundsPerMatch: Int, matchUp: (String, String)): Seq[Score] = {
 
     def play(x: ComputerPlayer, o: ComputerPlayer): CellState = {
       val game = new Game
@@ -29,9 +29,15 @@ object AiVersesAiMatchRunner {
     }
     
     val numTies = countResultsFor(Clear)
-    val pointsForX = (countResultsFor(X) * 2) + numTies
-    val pointsForO = (countResultsFor(O) * 2) + numTies
-    return Seq( (xName, pointsForX), (oName, pointsForO))
+    val xWins = countResultsFor(X)
+    val oWins = countResultsFor(O)
+    val pointsForX = (xWins * 2) + numTies
+    val pointsForO = (oWins * 2) + numTies
+    return Seq( 
+        Score(xName, xWins, oWins, numTies, pointsForX),
+        Score(oName, oWins, xWins, numTies, pointsForO))
   }
 
 }
+
+case class Score(player: String, wins: Int, losses: Int, ties: Int, points: Int)

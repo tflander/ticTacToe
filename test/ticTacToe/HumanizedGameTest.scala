@@ -36,8 +36,8 @@ class HumanizedGameTest extends FunSpec with ShouldMatchers {
 	val rawResults = for (matchUp <- tournament) yield runMatch(roundsPerMatch, matchUp)
     println(rawResults)
     println("====")
-    val results = rawResults.flatten.groupBy(_._1)
-    	.mapValues(tupleList => tupleList.map(_._2))
+    val results = rawResults.flatten.groupBy(_.player)
+    	.mapValues(tupleList => tupleList.map(_.points))
     	.mapValues(scoreList => scoreList.foldLeft(0)(_ + _))
     println(results)
   }
